@@ -1,0 +1,12 @@
+import(parallel,clinfun)
+
+export(estPI,plotPI,gmw,rejectionPlot,createGroups,getSigTests)
+
+S3method(print,estPI)
+S3method(plot,estPI)
+
+S3method(print,re)
+S3method(summary,re)
+S3method(plot,re)
+
+useDynLib(gMWT)
