@@ -1,3 +1,5 @@
+# Version: 30-11-2012, Daniel Fischer
+
 # This function calculates the different probabilistic indices for P_t , P_tt' and P_tt't''
 # It supports (under Linux) parallel computing and offers several different algorithms to
 # calculate the probability estimators, which should in general provide the same results, but
@@ -8,7 +10,7 @@
 estPI <- function(X,g,type="pair",goi=NULL,mc=1,order=TRUE,alg="Cnaive"){
 
  type <- match.arg(type,c("single","pair","triple"))
- alg <- match.arg(alg,c("Cnaive","Rsub","Rnaive","Rgrid"))
+ alg <- match.arg(alg,c("Cnaive","Csubmat","Rsubmat","Rnaive","Rgrid"))
  g <- relabelGroups(g)
 
  # Define the output object
@@ -62,18 +64,6 @@ inner3 <- function(i,X,g,comb,alg){
   PE3(X[,i],g,comb,alg) 
 }
 
-#inner3 <- function(i,alg="C"){
-#   if(alg=="C")
-#   {
-#     getP.C(X[g==comb[oRun,1],i],X[g==comb[oRun,2],i],X[g==comb[oRun,3],i])
-#   } else if(alg=="Rsub") {
-#     triple.subMatEstimate(X[g==comb[oRun,1],i],X[g==comb[oRun,2],i],X[g==comb[oRun,3],i],alt=c(1,0,0,0,0,0))
-#   } else {
-#     stop("We do not have this kind of PI for triples, sorry!")
-#   }
-#}
-
-
  # Now go through all the possible options for the PI
  for(oRun in 1:NlistItems)
  {  
@@ -90,15 +80,8 @@ inner3 <- function(i,X,g,comb,alg){
 	result[[oRun]] <- PE2(X,g,comb[oRun,],alg)
 	names(result)[oRun] <- paste("P(",paste(comb[oRun,],collapse="<"),")",sep="")
 
-      } else if(type=="triple"){
-	  
-
-#           if(alg=="C")
-# 	  {
-# 	    result[[oRun]] <- getP.C(X[g==comb[oRun,1]],X[g==comb[oRun,2]],X[g==comb[oRun,3]])
-# 	  } else if(alg=="sub") {
-#  	    result[[oRun]] <-  triple.subMatEstimate(X[g==comb[oRun,1]],X[g==comb[oRun,2]],X[g==comb[oRun,3]])
-# 	  }
+      } else if(type=="triple")
+	{
 	result[[oRun]] <- PE3(X,g,comb[oRun,],alg)
 	names(result)[oRun] <- paste("P(",paste(comb[oRun,],collapse="<"),")",sep="")
       }
@@ -116,7 +99,6 @@ inner3 <- function(i,X,g,comb,alg){
 
       } else if(type=="triple"){
 	result[[oRun]] <- unlist(mclapply(c(1:dimX[2]),inner3,X,g,comb[oRun,],alg,mc.cores=mc))
-	#result[[oRun]] <- unlist(mclapply(c(1:dimX[2]),inner3,alg,mc.cores=mc))
 	names(result)[oRun] <- paste("P(",paste(comb[oRun,],collapse="<"),")",sep="")
       }
     }

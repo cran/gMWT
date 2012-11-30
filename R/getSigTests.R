@@ -1,3 +1,5 @@
+# Version: 30-11-2012, Daniel Fischer
+
 getSigTests <- function(X, alpha=NULL, crit="distance"){
 
  crit <- match.arg(crit,c("distance","ratio"))

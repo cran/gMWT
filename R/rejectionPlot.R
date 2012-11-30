@@ -1,3 +1,5 @@
+# Version: 30-11-2012, Daniel Fischer
+
 rejectionPlot <- function(X,lCol="red",xlim=NULL,crit="distance"){
 
   crit <- match.arg(crit,c("distance","ratio"))
@@ -41,16 +43,10 @@ rejectionPlot <- function(X,lCol="red",xlim=NULL,crit="distance"){
   
   ylim <- c(0,max(sigTests[,sum(sigTests[1,]<=xlim[2])]))
   
- #nf <- layout(matrix(c(1,2),ncol=1), widths=c(7), heights=c(7,2), TRUE)
- #nf <- layout(matrix(c(2,0,1,3),2,2,byrow=TRUE), c(3,1), c(1,3), TRUE)
- nf <- layout(matrix(c(1,2),ncol=1),c(4,4), c(3,1), TRUE)
-# layout.show(nf)
-
-  
+  nf <- layout(matrix(c(1,2),ncol=1),c(4,4), c(3,1), TRUE)
   par(oma=c(2,0,1,0)
- #     ,pty="s"
-      ,mar=c(4,4,1,0)
-     )
+     ,mar=c(4,4,1,0))
+
   plot(c(0,sigTests[1,]),c(0,sigTests[2,]),col=lCol[1],type="l",ylab="Observed Ratio",xlab=" ",xlim=xlim,ylim=ylim)
   lines(c(-10,10),c(-10,10),type="l")
   if(wasMatrix)

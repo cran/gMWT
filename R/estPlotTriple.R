@@ -1,3 +1,5 @@
+# Version: 30-11-2012, Daniel Fischer
+
 estPlotTriple <- function(x,col="black",highlight=NULL,hlCol="red",pch=20,zoom=F){
 
   if(length(x$probs)==1) stop("You only have 1 probabilistic index, I cannot plot anything, sorry!!!\n")
@@ -86,8 +88,5 @@ estPlotTriple <- function(x,col="black",highlight=NULL,hlCol="red",pch=20,zoom=F
       axis(1,at=seq(0,1,0.2),labels=seq(0,1,0.2))
       run <- run + 1
     }
-
-
-
   }
 }

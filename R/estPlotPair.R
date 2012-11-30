@@ -1,3 +1,5 @@
+# Version: 30-11-2012
+
 estPlotPair <- function(x,col,highlight,hlCol,pch,zoom,...){
 
   ifelse(is.matrix(x$probs),Nprobs <- dim(x$probs)[1], Nprobs <- length(x$probs))
@@ -5,11 +7,9 @@ estPlotPair <- function(x,col,highlight,hlCol,pch,zoom,...){
 
   markThese <- rep(col,Nval)
   markThese[highlight] <- hlCol
- # comb <- getComb(x$goi,type="pairs",order=x$order)
   
   pairComb <- getPairComb(x$goi,x$order)
 
-  #Ncols <- Nprobs*(Nprobs-1)/2
 
   par(mfrow=c(Nprobs-1,Nprobs-1),
       pty="s",

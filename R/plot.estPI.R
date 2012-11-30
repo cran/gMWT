@@ -1,3 +1,5 @@
+# Version: 30-11-2012, Daniel Fischer
+
 plot.estPI <- function(x,col="black",highlight=NULL,hlCol="red",pch=20,zoom=FALSE,...){
   if(x$type=="single")
   {

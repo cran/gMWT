@@ -1,3 +1,5 @@
+# Version: 30-11-2012, Daniel Fischer
+
 mwNullDist <- function(x,y,nper){
   permTestValues <- c(rep(0,nper))
   

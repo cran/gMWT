@@ -1,4 +1,9 @@
 LOG of the CHANGES in the package gMWT
 
-Version 0.1-0:
+Version 0.2:
+* Added the RcppArmadillo and Rcpp dependencies
+* Added the C++ submatrix approach (Csubmat)
+* Algorithm optimization for the Rsubmat approach
+
+Version 0.1:
 * Initial version, submission to cran

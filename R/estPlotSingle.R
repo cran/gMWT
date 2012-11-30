@@ -1,9 +1,10 @@
+# Version: 30-11-2012, Daniel Fischer
+
 estPlotSingle <- function(x,col,highlight,hlCol,pch,zoom,...){
 
   ifelse(is.matrix(x$probs),Nprobs <- dim(x$probs)[1], Nprobs <- length(x$probs))
   ifelse(is.matrix(x$probs),Nval <- dim(x$probs)[2], Nval <- 1)
   Nrows <- 1
-  #Ncols <- Nprobs*(Nprobs-1)/2
 
   markThese <- rep(col,Nval)
   markThese[highlight] <- hlCol

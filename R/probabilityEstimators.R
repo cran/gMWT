@@ -1,6 +1,8 @@
-# This function is needed for the P_t case .
-# Daniel, Tampere 03-10-2012
-# Function tests, 03-10.2012
+# Version: 30-11-2012, Daniel Fischer
+
+# Changes:
+# Added the CSubmat option here , 29-11-2012, Daniel Fischer
+
 PE1 <- function(X,g,t,goi,alg){
 
    result <- 0 
@@ -61,10 +63,12 @@ PE2 <- function(X,g,comb,alg){
 PE3 <- function(X,g,comb,alg){
   if(alg=="Cnaive"){
     result <- getP.Cnaive(X[g==comb[1]],X[g==comb[2]],X[g==comb[3]])
-  } else if(alg=="Rsub"){
+  } else if(alg=="Rsubmat"){
     result <- getP.Rsub(X[g==comb[1]],X[g==comb[2]],X[g==comb[3]])
   } else if(alg=="Rnaive"){
     result <- getP.Rnaive(X[g==comb[1]],X[g==comb[2]],X[g==comb[3]])
+  } else if(alg=="Csubmat"){
+    result <- getP.Csub(X[g==comb[1]],X[g==comb[2]],X[g==comb[3]])
   } else {
      stop("There is no such implementation, sorry!\nS")
   }

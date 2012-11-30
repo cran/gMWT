@@ -1,9 +1,11 @@
+# Version: 30-11-2012, Daniel Fischer
+
 mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 
  res <- list()
  diffTests <- getComb(goi,"single",order=T)
 
- METHOD <- c("********* Mann-Whitney Test *********")
+ METHOD <- c("********* Mann-Whitney Test (single) *********")
  DNAME <- PARAMETERS[[1]]
  TEST  <- PARAMETERS[[2]]
  TYPE  <- PARAMETERS[[3]]
@@ -54,8 +56,8 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 # Case: asymptotic, two sided, X is vector
 
 	    res <- c()
-            stop("We do not have a two-sided version for the triple test, sorry!!!A,2S,V")
-	  } else  if(type=="base"){
+            stop("We do not have an asymptotic two-sided version for the MW test, sorry!!!")
+	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: MW from the base system, two.sided, X is vector
 	    for(testRun in 1:nrow(diffTests))
@@ -89,7 +91,7 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, two sided, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the triple test!,O,2S,V")
+	    stop("We do not have this kind of type for the MW test!")
 	  }
 ##---------------------------------------------------------------------------------------------------------------------------------------
        } else if(alternative=="greater"){
@@ -129,13 +131,13 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is vector
 	    res <- c()
-            warning("We do not have a two-sided version for the triple test, sorry!!!A,2S,V")
+            stop("We do not have an asymptotic greater version for the MW test, sorry!!!")
           
-	  } else  if(type=="base"){
+	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: MW from the base system, greater, X is vector
 	    for(testRun in 1:nrow(diffTests))
-	    { # Our greater and base greater are different interpretations, remeber that!!!
+	    { # Our greater and base greater are different interpretations, remember that!!!
 	      testResult <- wilcox.test(X[g==diffTests[testRun,1]],X[g!=diffTests[testRun,1]],alt="less")
 	      PVAL <- testResult$p.value
 	
@@ -160,14 +162,11 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	      }
 	      res <- resMin
 	    }
-
-
-
 	  } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, greater, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the triple test!,O,G,V")
+	    stop("We do not have this kind of type for the MW test!,O,G,V")
 	  }
        } else if(alternative=="smaller"){
 ##---------------------------------------------------------------------------------------------------------------------------------------
@@ -207,9 +206,9 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, smaller, X is vector
 	    res <- c()
-            warning("We do not have a two-sided version for the triple test, sorry!!!,A,S,V")
+            stop("We do not have an asymptotic smaller version for the MW test, sorry!!!")
 	  
-	  } else  if(type=="base"){
+	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: MW from the base system, smaller, X is vector
 	    for(testRun in 1:nrow(diffTests))
@@ -242,7 +241,7 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, one sided, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the triple test!,O,S,V")
+	    stop("We do not have this kind of type for the MW test!")
 	  }
        } else {
 	    res <- c()
@@ -280,7 +279,6 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "greater"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
@@ -307,9 +305,9 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, two sided, X is matrix
 	    res <- c()
-	    stop("We do not have a two-sided version for the triple test, sorry!!!,A,T,M")
+	    stop("We do not have an asymptotic two-sided version for the MW test, sorry!!!")
 
-	} else if(type=="base"){
+	} else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: permutation, two sided, X is matrix
 	   innerLoop <- function(i,testRun){
@@ -329,7 +327,6 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "two.sided"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
@@ -356,10 +353,9 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, two sided, X is matrix
 	    res <- c()
-	    stop("We do not have this kind of type for the triple test!,O,T,M")
+	    stop("We do not have this kind of type for the MW test!")
 	  }
     } else if(alternative=="greater"){
-     #  res <- do.call(rbind,mclapply(c(1:dimX[2]),innerLoop,mc.cores=mc))
 	  if(type=="permutation"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: permutation, greater, X is matrix
@@ -381,7 +377,6 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "greater"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
@@ -407,9 +402,9 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is matrix
 	    res <- c()
-            warning("We do not have a two-sided version for the triple test, sorry!!!A,2S,V")
+            stop("We do not have an asymptotic greater version for the MW test, sorry!!!")
 
-	} else if(type=="base"){
+	} else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: base, greater, X is matrix
 	   innerLoop <- function(i,testRun){
@@ -429,7 +424,6 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "greater"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
@@ -456,10 +450,9 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 
 	  } else {
 	    res <- c()
-	    stop("We do not have this kind of type for the UIT!,O,G,M")
+	    stop("We do not have this kind of type for the MWT!")
 	  }
     } else if(alternative=="smaller"){
-     #  res <- do.call(rbind,mclapply(c(1:dimX[2]),innerLoop,mc.cores=mc))
 	  if(type=="permutation"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: permutation, smaller, X is matrix
@@ -481,7 +474,6 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "smaller"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
@@ -507,9 +499,9 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, smaller, X is matrix
 	    res <- c()
-	    warning("We do not have this kind of type for the triple test!,A,S,M")
+	    stop("We do not have this kind of type for the MW test!")
 
-	} else if(type=="base"){
+	} else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: base, smaller, X is matrix
 	   innerLoop <- function(i,testRun){
@@ -529,7 +521,6 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "smaller"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
@@ -556,7 +547,7 @@ mw.single.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 
           } else {
 	    res <- c()
-	    stop("We do not have this kind of type for the triple test!,O,S,M")
+	    stop("We do not have this kind of type for the MW test!")
 	  }
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other, other, X is matrix

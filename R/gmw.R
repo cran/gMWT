@@ -1,8 +1,13 @@
-gmw <- function(X,g,goi=NULL,test="mw",type="permutation",prob="pair",nper=2000,alternative="greater",mc=1,output="min",cluster=NULL,order=TRUE){
+# Version: 30-11-2012, Daniel Fischer
 
- type <- match.arg(type,c("permutation","base","asymptotic","submat"))
+gmw <- function(X,g,goi=NULL,test="mw",type="permutation",prob="pair",nper=2000,alternative="greater",mc=1,output="min",cluster=NULL,order=TRUE,alg=NULL){
+
+ if(is.null(alg)) alg <- "Csubmat"
+
+ type <- match.arg(type,c("permutation","external","asymptotic"))
  test <- match.arg(test,c("uit","triple","jt","jt*","mw","kw"))
  prob <- match.arg(prob,c("single","pair","triple"))
+ alg <- match.arg(alg,c("Cnaive","Rnaive","Csubmat","Rsubmat"))
  alternative <- match.arg(alternative,c("smaller","greater","two.sided"))
  output <- match.arg(output,c("min","full"))
 
@@ -25,7 +30,7 @@ gmw <- function(X,g,goi=NULL,test="mw",type="permutation",prob="pair",nper=2000,
 		    "kw"="Kruskal-Wallis Test")
  TYPE <- switch(type,"permutation"="Permutation Test",
                      "asymptotic"="Asymptotic Test",
-		     "base"="Included in base/other package Test")
+		     "external"="Included in base/other package Test")
  ALTERNATIVE=""
  STATISTIC=""
  PVAL=""
@@ -38,7 +43,7 @@ gmw <- function(X,g,goi=NULL,test="mw",type="permutation",prob="pair",nper=2000,
 
  } else if(test=="triple"){
 
-    res <- triple.gmw(X,g,goi,type,nper,alternative,mc,PARAMETERS,output)
+    res <- triple.gmw(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg)
 
 } else if(test=="mw"){
 

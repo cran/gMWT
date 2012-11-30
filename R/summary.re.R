@@ -1,3 +1,5 @@
+# Version: 30-11-2012, Daniel Fischer
+
 summary.re <- function(object, ...){
   cat("Rejection Summary\n")
   cat("---------------\n")

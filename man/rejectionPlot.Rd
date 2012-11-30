@@ -49,9 +49,9 @@ colnames(X) <- letters[1:10]
 g <- c(rep(1,50),rep(2,60),rep(3,40))
 
 
-test1 <- gmw(X,g,test="mw",type="base",alternative="greater",goi=c(2,3))
-test2 <- gmw(X,g,test="kw",type="base")
-test3 <- gmw(X,g,test="jt",type="base",alternative="greater")
+test1 <- gmw(X,g,test="mw",type="external",alternative="greater",goi=c(2,3))
+test2 <- gmw(X,g,test="kw",type="external")
+test3 <- gmw(X,g,test="jt",type="external",alternative="greater")
 
 tests <- rbind(test1,test2,test3)
 

@@ -25,7 +25,7 @@ This function plots a rejection plot for an existing \code{re} object.
   colnames(X) <- letters[1:10]
   g <- c(rep(1,50),rep(2,60),rep(3,40))
 
-  test <- gmw(X,g,test="kw",type="base")
+  test <- gmw(X,g,test="kw",type="external")
 
   re1 <- getSigTests(test)
   

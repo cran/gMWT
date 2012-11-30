@@ -1,0 +1,2 @@
+- Clean up the code and optimise the function calls (join functions and control calls via options instead)
+- Add the asymptotic option for the tests

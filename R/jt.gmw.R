@@ -1,3 +1,5 @@
+# Version: 30-11-2012, Daniel Fischer
+
 jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 
  res <- list()
@@ -53,18 +55,10 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, two sided, X is vector
-	    #STATISTIC <- 1234
-	    #PVAL <- 1234
-	    #TEST <- "NOT IMPLEMENTED YET!!!"
-	    #ALTERNATIVE <- "two.sided"
-	    #names(PVAL) <- "p.value"
-	    #names(STATISTIC) <- "obs.value"
-	    #res<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
-	    #class(res)<-"htest"
 	    res <- c()
-            warning("We do not have a two-sided version for the triple test, sorry!!!A,2S,V")
+            stop("We do not have a two-sided, asymptotic version for the Jonckheere-Terpstra test, sorry!!!\n")
 
-	  } else  if(type=="base"){
+	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: JT from the clinfun package, two.sided, X is vector
 	    for(testRun in 1:nrow(diffTests))
@@ -98,7 +92,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, two sided, X is vector
 	    res <- c()
-	    warning("We do not have this kind of type for the triple test!,O,2S,V")
+	    stop("We do not have this kind of type for the Jonckheere-Terpstra test!\n")
 	  }
 ##---------------------------------------------------------------------------------------------------------------------------------------
        } else if(alternative=="greater"){
@@ -137,18 +131,10 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is vector
-	    #STATISTIC <- 1234
-	    #PVAL <- 1234
-	    #TEST <- "NOT IMPLEMENTED YET!!!"
-	    #ALTERNATIVE <- "two.sided"
-	    #names(PVAL) <- "p.value"
-	    #names(STATISTIC) <- "obs.value"
-	    #res<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
-	    #class(res)<-"htest"
 	    res <- c()
-            warning("We do not have a two-sided version for the triple test, sorry!!!A,2S,V")
+            stop("We do not have a asymptotic, greater version of the Jonckheere-Terpstra test, sorry!!!\n")
           
-	  } else  if(type=="base"){
+	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: JT from the clinfun package, greater, X is vector
 	    for(testRun in 1:nrow(diffTests))
@@ -182,7 +168,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, greater, X is vector
 	    res <- c()
-	    warning("We do not have this kind of type for the triple test!,O,G,V")
+	    stop("We do not have this kind of type for the Jonckheere-Terpstra test!\n")
 	  }
        } else if(alternative=="smaller"){
 ##---------------------------------------------------------------------------------------------------------------------------------------
@@ -221,18 +207,10 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, smaller, X is vector
-	    #STATISTIC <- 1234
-	    #PVAL <- 1234
-	    #TEST <- "NOT IMPLEMENTED YET!!!"
-	    #ALTERNATIVE <- "two.sided"
-	    #names(PVAL) <- "p.value"
-	    #names(STATISTIC) <- "obs.value"
-	    #res<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
-	    #class(res)<-"htest"
 	    res <- c()
-            warning("We do not have a two-sided version for the triple test, sorry!!!,A,S,V")
+            stop("We do not have an asymptotic, smaller version for the Jonckheere-Terpstra test, sorry!!!\n")
 	  
-	  } else  if(type=="base"){
+	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: JT from the clinfun package, smaller, X is vector
 	    for(testRun in 1:nrow(diffTests))
@@ -265,11 +243,11 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, one sided, X is vector
 	    res <- c()
-	    warning("We do not have this kind of type for the triple test!,O,S,V")
+	    stop("We do not have this kind of type for the Jonckheere-Terpstra test!")
 	  }
        } else {
 	    res <- c()
-	    warning("There is no other option than small, greater or two-sided...All other")
+	    stop("There is no other option than smaller, greater or two-sided...All other")
        }
 ## Case: X is a matrix
     } else{
@@ -329,18 +307,10 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, two sided, X is matrix
-	    #STATISTIC <- 1234
-	    #PVAL <- 1234
-	    #TEST <- "NOT IMPLEMENTED YET!!!"
-	    #ALTERNATIVE <- "two.sided"
-	    #names(PVAL) <- "p.value"
-	    #names(STATISTIC) <- "obs.value"
-	    #res<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
-	    #class(res)<-"htest"
 	    res <- c()
-	    warning("We do not have a two-sided version for the triple test, sorry!!!,A,T,M")
+	    stop("We do not have a two-sided asymptotic version for the Jonckheere-Terpstra test, sorry!!!")
 
-	} else if(type=="base"){
+	} else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: base, two sided, X is matrix
 	   innerLoop <- function(i,testRun){
@@ -360,7 +330,6 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "two.sided"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
@@ -387,10 +356,9 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, two sided, X is matrix
 	    res <- c()
-	    warning("We do not have this kind of type for the triple test!,O,T,M")
+	    stop("We do not have this kind of type for the Jonckheere-Terpstra test!")
 	  }
     } else if(alternative=="greater"){
-     #  res <- do.call(rbind,mclapply(c(1:dimX[2]),innerLoop,mc.cores=mc))
 	  if(type=="permutation"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: permutation, greater, X is matrix
@@ -436,20 +404,10 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is matrix
-
-
-	    #STATISTIC <- 1234
-	    #PVAL <- 1234
-	    #TEST <- "NOT IMPLEMENTED YET!!!"
-	    #ALTERNATIVE <- "two.sided"
-	    #names(PVAL) <- "p.value"
-	    #names(STATISTIC) <- "obs.value"
-	    #res<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
-	    #class(res)<-"htest"
 	    res <- c()
-            warning("We do not have a two-sided version for the triple test, sorry!!!A,2S,V")
+            stop("We do not have an asymptotic, greater version for the Jonckheere-Terpstra test, sorry!!!")
 
-	} else if(type=="base"){
+	} else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: base, greater, X is matrix
 	   innerLoop <- function(i,testRun){
@@ -469,7 +427,6 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "increasing"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
@@ -496,10 +453,9 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 
 	  } else {
 	    res <- c()
-	    warning("We do not have this kind of type for the UIT!,O,G,M")
+	    stop("We do not have this kind of type for the Jonckheere-Terpstra test!")
 	  }
     } else if(alternative=="smaller"){
-     #  res <- do.call(rbind,mclapply(c(1:dimX[2]),innerLoop,mc.cores=mc))
 	  if(type=="permutation"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: permutation, smaller, X is matrix
@@ -546,18 +502,10 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, smaller, X is matrix
-	    #STATISTIC <- 1234
-	    #PVAL <- 1234
-	    #TEST <- "NOT IMPLEMENTED YET!!!"
-	    #ALTERNATIVE <- "one.sided"
-	    #names(PVAL) <- "p.value"
-	    #names(STATISTIC) <- "obs.value"
-	    #res<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
-	    #class(res)<-"htest"
 	    res <- c()
-	    warning("We do not have this kind of type for the triple test!,A,S,M")
+	    warning("We do not have an asymptotic smaller version for the Jonckheere-Terpstra test!")
 
-	} else if(type=="base"){
+	} else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: base, smaller, X is matrix
 	   innerLoop <- function(i,testRun){
@@ -577,7 +525,6 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "decreasing"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
@@ -605,14 +552,14 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 
           } else {
 	    res <- c()
-	    warning("We do not have this kind of type for the triple test!,O,S,M")
+	    stop("We do not have this kind of type for the Jonckheere-Terpstra test!")
 	  }
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other, other, X is matrix
 
     } else {
 	    res <- c()
-	    warning("There are no other alternatives possible, sorry! All other....")
+	    stop("There are no other alternatives possible, sorry! All other....")
      }
   }
   res

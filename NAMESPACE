@@ -1,4 +1,4 @@
-import(parallel,clinfun)
+import(parallel,clinfun, RcppArmadillo)
 
 export(estPI,plotPI,gmw,rejectionPlot,createGroups,getSigTests)
 

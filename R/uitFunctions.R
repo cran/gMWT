@@ -1,3 +1,5 @@
+# Version: 30-11-2012, Daniel Fischer
+
 uitPTest <- function(x,y,z,nper){
     Nx <- length(x)
     Ny <- length(y)

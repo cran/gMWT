@@ -10,7 +10,7 @@
 }
 \usage{
   gmw(X,g,goi=NULL,test="mw",type="permutation",prob="pair",nper=2000,
-  alternative="greater",mc=1,output="min", cluster=NULL, order = TRUE)
+  alternative="greater",mc=1,output="min", cluster=NULL, order = TRUE, alg=NULL)
 }
 
 \arguments{
@@ -21,7 +21,7 @@
   \item{test}{Specifies the test statistic.}
   \item{type}{Permutation test (\code{"permutation"}) or normal approximation (\code{"approximation"}) for the
    calculation of the p-values. Tests implemented
-		in R-base \code{"base"} are also accessible, see details.}
+		in R-base \code{"external"} are also accessible, see details.}
   \item{prob}{This option is only for the Mann-Whitney test, see details.}
   \item{nper}{If type is \code{"permutation"} this option specifies how many permutations are used to calculate the p-value.}
   \item{alternative}{Specifies the alternative, the options are \code{"smaller"},\code{"greater"} and \code{"two.sided"}, see details.}
@@ -29,6 +29,7 @@
   \item{output}{Determines the level of the details in the output.}
   \item{cluster}{A vector of same length as \code{g}, giving possible cluster information for performing the permutation test.}
   \item{order}{Boolean, shall all orders be calculated or only increasing orders?}
+  \item{alg}{Internal function, what algorithm should be used, see details.}
 }
 
 \details{
@@ -48,7 +49,7 @@
 
   The option \code{type} is used to decide how the p-values are computed. If \code{test='mw'}, 
   \code{test='kw'} or \code{test='jt'} then possible options are 
-  \code{type='base'} and \code{type='permutation'}. If  \code{test='uit'}, \code{test='triple'} or \code{test='jt*'}.
+  \code{type='external'} and \code{type='permutation'}. If  \code{test='uit'}, \code{test='triple'} or \code{test='jt*'}.
   one can choose options \code{type='permutation'} and \code{type='asymptotic'}.
 
   The \code{prob} option is only for the Mann-Whitney test. For the option \code{"single"}, the tests are to
@@ -70,6 +71,9 @@
 
   The option \code{cluster} is an additional object for the Kruskal-Wallis permutation test. For cluster-dependent
   observation, only the permutations within clusters are acceptable for the p-value calculation.
+
+  There is also a function to choose the used calculation algorithm, options here are \code{"Rsubmat"}, \code{"Rnaive"}, \code{"Csubmat"}, \code{"Cnaive"}. The
+  purpose is just for validation.
 }
 \value{
   A matrix or vector of p-values of the underlying hypothesis test(s). In case of \code{output="full"} we give a list, and each list
@@ -92,7 +96,7 @@
   g <- c(1,1,1,2,2,2,2,3,3,3,4,4,4,4,4,5,5,5)
   cluster=c(rep(c(1,2),9))
 
-  gmw(X,g,test="kw",type="base")
+  gmw(X,g,test="kw",type="external")
   gmw(X,g,test="kw",type="permutation")
   gmw(X,g,test="kw",type="permutation",cluster=cluster)
 

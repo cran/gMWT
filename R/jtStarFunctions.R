@@ -1,3 +1,5 @@
+# Version: 30-11-2012, Daniel Fischer
+
 jtStar <- function(X,g){
   goi <- sort(unique(g))
   diffProbs <- getComb(goi,"pairs",order=T)

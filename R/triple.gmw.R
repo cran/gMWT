@@ -1,4 +1,6 @@
-triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
+# Version: 30-11-2012, Daniel Fischer
+
+triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 
  res <- list()
  diffTests <- getComb(goi,"triple",order=T)
@@ -18,47 +20,14 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
     if(XisVector){
 ##---------------------------------------------------------------------------------------------------------------------------------------
        if(alternative=="two.sided"){
-	  if(type=="submat"){
-#----------------------------------------------------------------------------------------------------------------------------------------
-# Case: submatrix, two sided, X is vector
-	    for(testRun in 1:nrow(diffTests))
-	    {
-	      obsValue1 <- as.numeric(getP.Rsub(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]]))
-	      obsValue2 <- as.numeric(getP.Rsub(X[g==diffTests[testRun,3]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,1]]))
-	      nullDist1 <- perm.triple(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]],nper,type="submat")
-	     # nullDist2 <- perm.triple.subMatEstimate(X[g==diffTests[testRun,3]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,1]],nper)
-	      PVAL <- min(sum(nullDist1>=obsValue1)/nper,sum(nullDist1>=obsValue2)/nper)
-	
-	      names(PVAL) <- "p.value"
-	      STATISTIC <- max(obsValue1,obsValue2)
-	      names(STATISTIC) <- "obs.value"
-	      ALTERNATIVE <- "two.sided"
-	      resTemp<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
-	      class(resTemp)<-"htest"
-	      
-              res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6 or P",diffTests[testRun,3],diffTests[testRun,2],diffTests[testRun,1]," > 1/6",sep="")
-	    }
-	    if(output=="min")
-	    {
-	      resMin <- matrix(NA,ncol=1,nrow=length(res))
-	      colnames(resMin) <- "pValues"
-	      rownames(resMin) <- names(res)
-	      for(i in 1:length(res))
-	      {
-		resMin[i,1] <- res[[i]]$p.value
-	      }
-	      res <- resMin
-	    }
- 	  }else if(type=="permutation"){
+	  if(type=="permutation"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: permutation, two sided, X is vector
 	    for(testRun in 1:nrow(diffTests))
 	    {
 	      obsValue1 <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]]))
 	      obsValue2 <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,3]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,1]]))
-	      nullDist1 <- perm.triple(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]],nper,type="cnaive")
-	      #nullDist2 <- perm.triple.subMatEstimate(X[g==diffTests[testRun,3]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,1]],nper)
+	      nullDist1 <- perm.triple(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]],nper,algorithm=alg)
 	      PVAL <- min(sum(nullDist1>=obsValue1)/nper,sum(nullDist1>=obsValue2)/nper)
 	
 	      names(PVAL) <- "p.value"
@@ -87,12 +56,12 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 # Case: asymptotic, two sided, X is vector
 
 	    res <- c()
-            warning("We do not have a asymptotic two-sided version for the triple test, sorry!!!")
+            stop("We do not have a asymptotic two-sided version for the triple test, sorry!!!")
           } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, two sided, X is vector
 	    res <- c()
-	    warning("We do not have this kind of type for the triple test!,O,2S,V")
+	    stop("We do not have this kind of type for the triple test!,O,2S,V")
 	  }
 ##---------------------------------------------------------------------------------------------------------------------------------------
        } else if(alternative=="greater"){
@@ -102,38 +71,7 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	    for(testRun in 1:nrow(diffTests))
 	    {
 	      obsValue <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]]))
-	      nullDist <- perm.triple(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]],nper,type="cnaive")
-	      PVAL <- sum(nullDist>=obsValue)/nper
-	
-	      names(PVAL) <- "p.value"
-	      STATISTIC <- obsValue
-	      names(STATISTIC) <- "obs.value"
-	      ALTERNATIVE <- "greater"
-	      resTemp<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
-	      class(resTemp)<-"htest"
-	      
-              res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6",sep="")
-	    }
-	    if(output=="min")
-	    {
-	      resMin <- matrix(NA,ncol=1,nrow=length(res))
-	      colnames(resMin) <- "pValues"
-	      rownames(resMin) <- names(res)
-	      for(i in 1:length(res))
-	      {
-		resMin[i,1] <- res[[i]]$p.value
-	      }
-	      res <- resMin
-	    }
-
-	  } else if(type=="submat"){
-#----------------------------------------------------------------------------------------------------------------------------------------
-# Case: submat, greater, X is vector
-	    for(testRun in 1:nrow(diffTests))
-	    {
-	      obsValue <- as.numeric(getP.Rsub(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]]))
-	      nullDist <- perm.triple(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]],nper,type="submat")
+	      nullDist <- perm.triple(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]],nper,algorithm=alg)
 	      PVAL <- sum(nullDist>=obsValue)/nper
 	
 	      names(PVAL) <- "p.value"
@@ -162,12 +100,12 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is vector
 	    res <- c()
-            warning("We do not have a asymptotic greater version for the triple test, sorry!!!A,2S,V")
+            stop("We do not have a asymptotic greater version for the triple test, sorry!!!A,2S,V")
           } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, greater, X is vector
 	    res <- c()
-	    warning("We do not have this kind of type for the triple test!,O,G,V")
+	    stop("We do not have this kind of type for the triple test!,O,G,V")
 	  }
        } else if(alternative=="smaller"){
 ##---------------------------------------------------------------------------------------------------------------------------------------
@@ -177,38 +115,7 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	    for(testRun in 1:nrow(diffTests))
 	    {
 	      obsValue <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]]))
-	      nullDist <- perm.triple(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]],nper,type="cnaive")
-	      PVAL <- sum(nullDist<obsValue)/nper
-	
-	      names(PVAL) <- "p.value"
-	      STATISTIC <- obsValue
-	      names(STATISTIC) <- "obs.value"
-	      ALTERNATIVE <- "smaller"
-	      resTemp<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
-	      class(resTemp)<-"htest"
-	      
-              res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," < 1/6",sep="")
-	    }
-	    if(output=="min")
-	    {
-	      resMin <- matrix(NA,ncol=1,nrow=length(res))
-	      colnames(resMin) <- "pValues"
-	      rownames(resMin) <- names(res)
-	      for(i in 1:length(res))
-	      {
-		resMin[i,1] <- res[[i]]$p.value
-	      }
-	      res <- resMin
-	    }
-
-	  } else if(type=="submat"){
-#----------------------------------------------------------------------------------------------------------------------------------------
-# Case: submatrix, smaller, X is vector
-	    for(testRun in 1:nrow(diffTests))
-	    {
-	      obsValue <- as.numeric(getP.Rsub(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]]))
-	      nullDist <- perm.triple(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]],nper,type="submat")
+	      nullDist <- perm.triple(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],X[g==diffTests[testRun,3]],nper,algorithm=alg)
 	      PVAL <- sum(nullDist<obsValue)/nper
 	
 	      names(PVAL) <- "p.value"
@@ -237,16 +144,16 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is vector
 	    res <- c()
-            warning("We do not have a two-sided version for the triple test, sorry!!!,A,S,V")
+            stop("We do not have a two-sided version for the triple test, sorry!!!,A,S,V")
           } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, one sided, X is vector
 	    res <- c()
-	    warning("We do not have this kind of type for the triple test!,O,S,V")
+	    stop("We do not have this kind of type for the triple test!,O,S,V")
 	  }
        } else {
 	    res <- c()
-	    warning("There is no other option than small, greater or two-sided...All other")
+	    stop("There is no other option than small, greater or two-sided...All other")
        }
 ## Case: X is a matrix
     } else{
@@ -260,56 +167,11 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
     mc <- min(dimX[2],mc)
 
     if(alternative=="two.sided"){
-       	  if(type=="submat"){
-#----------------------------------------------------------------------------------------------------------------------------------------
-# Case: submatrix, two sided, X is matrix
-	    innerLoop <- function(i,testRun){
-             nullDist1 <- perm.triple(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper,type="submat")
-             #nullDist2 <- perm.triple.subMatEstimate(X[g==diffTests[testRun,3],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,1],i],nper)
-             obsValue1 <- as.numeric(getP.Rsub(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i]))
-             obsValue2 <- as.numeric(getP.Rsub(X[g==diffTests[testRun,3],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,1],i]))
-             pValue <- min(sum(nullDist1>=obsValue1)/nper,sum(nullDist1>=obsValue2)/nper)
-	     return(list(pValue=pValue,obsValue=max(obsValue1,obsValue2)))
-            }
-
-	    for(testRun in 1:nrow(diffTests))
-	    { 
-	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
-	      for(i in 1:dimX[2])
-	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
-		names(PVAL) <- "p.value"
-		ALTERNATIVE <- "two.sided"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
-		names(STATISTIC) <- "obs.value"
-		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
-		class(resTemp[[i]])<-"htest"	    
-	      }
-	     res[[testRun]] <- resTemp
-	     	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6 or P",diffTests[testRun,3],diffTests[testRun,2],diffTests[testRun,1]," > 1/6",sep="")
-	    }
-	    if(output=="min")
-	    {
-	      resMin <- matrix(NA,ncol=dimX[2],nrow=length(res))
-	      colnames(resMin) <- colnames(X)
-	      rownames(resMin) <- names(res)
-	      for(i in 1:length(res))
-	      {
-		for(j in 1:dimX[2])
-		{
-		  resMin[i,j] <- res[[i]][[j]]$p.value
-		}
-	      }
-	      res <- resMin
-	    }
-	  } else if(type=="permutation"){
+       	  if(type=="permutation"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: permutation, two sided, X is matrix
 	    innerLoop <- function(i,testRun){
-             nullDist1 <- perm.triple(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper,type="cnaive")
-             #nullDist2 <- perm.triple.subMatEstimate(X[g==diffTests[testRun,3],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,1],i],nper)
+             nullDist1 <- perm.triple(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper,algorithm=alg)
              obsValue1 <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i]))
              obsValue2 <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,3],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,1],i]))
              pValue <- min(sum(nullDist1>=obsValue1)/nper,sum(nullDist1>=obsValue2)/nper)
@@ -326,7 +188,6 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "two.sided"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
@@ -360,58 +221,12 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	    stop("We do not have this kind of type for the triple test!,O,T,M")
 	  }
     } else if(alternative=="greater"){
-     #  res <- do.call(rbind,mclapply(c(1:dimX[2]),innerLoop,mc.cores=mc))
-	  if(type=="submat"){
-#----------------------------------------------------------------------------------------------------------------------------------------
-# Case: submat, greater, X is matrix
-	      # Define the function, that is performed for column i (important for parallelization)
-	   innerLoop <- function(i,testRun){
-             nullDist <- perm.triple(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper,type="submat")
-             obsValue <- as.numeric(getP.Rsub(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i]))
-             pValue <- sum(nullDist>=obsValue)/nper
-	     return(list(pValue=pValue,obsValue=obsValue))
-            }
-
-	    for(testRun in 1:nrow(diffTests))
-	    { 
-	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
-	      for(i in 1:dimX[2])
-	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
-		names(PVAL) <- "p.value"
-		ALTERNATIVE <- "greater"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
-		names(STATISTIC) <- "obs.value"
-		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
-		class(resTemp[[i]])<-"htest"	    
-	      }
-	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6",sep="")
-	    }
-	    if(output=="min")
-	    {
-	      resMin <- matrix(NA,ncol=dimX[2],nrow=length(res))
-	      colnames(resMin) <- colnames(X)
-	      rownames(resMin) <- names(res)
-	      for(i in 1:length(res))
-	      {
-		for(j in 1:dimX[2])
-		{
-		  resMin[i,j] <- res[[i]][[j]]$p.value
-		}
-	      }
-	      res <- resMin
-	    }
-
-
-	  } else if(type=="permutation"){
+	  if(type=="permutation"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: permutation, greater, X is matrix
 	      # Define the function, that is performed for column i (important for parallelization)
 	   innerLoop <- function(i,testRun){
-             nullDist <- perm.triple(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper,type="cnaive")
+             nullDist <- perm.triple(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper,algorithm=alg)
              obsValue <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i]))
              pValue <- sum(nullDist>=obsValue)/nper
 	     return(list(pValue=pValue,obsValue=obsValue))
@@ -427,7 +242,6 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "greater"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
@@ -449,8 +263,6 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	      }
 	      res <- resMin
 	    }
-
-
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is matrix
@@ -461,54 +273,11 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	    stop("We do not have this kind of type for the UIT!,O,G,M")
 	  }
     } else if(alternative=="smaller"){
-     #  res <- do.call(rbind,mclapply(c(1:dimX[2]),innerLoop,mc.cores=mc))
-	  if(type=="submat"){
-#----------------------------------------------------------------------------------------------------------------------------------------
-# Case: submat, smaller, X is matrix
-	    innerLoop <- function(i,testRun){
-             nullDist <- perm.triple(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper,type="submat")
-             obsValue <- as.numeric(getP.Rsub(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i]))
-             pValue <- sum(nullDist<obsValue)/nper
-	     return(list(pValue=pValue,obsValue=obsValue))
-            }
-
-	    for(testRun in 1:nrow(diffTests))
-	    { 
-	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
-	      for(i in 1:dimX[2])
-	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
-		names(PVAL) <- "p.value"
-		ALTERNATIVE <- "smaller"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
-		names(STATISTIC) <- "obs.value"
-		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
-		class(resTemp[[i]])<-"htest"	    
-	      }
-	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," < 1/6",sep="")
-	    }
-	    if(output=="min")
-	    {
-	      resMin <- matrix(NA,ncol=dimX[2],nrow=length(res))
-	      colnames(resMin) <- colnames(X)
-	      rownames(resMin) <- names(res)
-	      for(i in 1:length(res))
-	      {
-		for(j in 1:dimX[2])
-		{
-		  resMin[i,j] <- res[[i]][[j]]$p.value
-		}
-	      }
-	      res <- resMin
-	    }
-	  }else if(type=="permutation"){
+	  if(type=="permutation"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: permutation, smaller, X is matrix
 	    innerLoop <- function(i,testRun){
-             nullDist <- perm.triple(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper,type="submat")
+             nullDist <- perm.triple(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper,algorithm=alg)
              obsValue <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i]))
              pValue <- sum(nullDist<obsValue)/nper
 	     return(list(pValue=pValue,obsValue=obsValue))
@@ -524,7 +293,6 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "smaller"
-		#DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    

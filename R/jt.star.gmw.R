@@ -1,9 +1,11 @@
+# Version: 30-11-2012, Daniel Fischer
+
 jt.star.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 
  res <- list()
  diffTests <- t(as.matrix(sort(goi)))
 
- METHOD <- c("********* Jonckheere-Terpstra Test *********")
+ METHOD <- c("********* Jonckheere-Terpstra* Test *********")
  DNAME <- PARAMETERS[[1]]
  TEST  <- PARAMETERS[[2]]
  TYPE  <- PARAMETERS[[3]]
@@ -56,7 +58,7 @@ jt.star.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	    res <- c()
             stop("We do not have a two-sided version for the triple test, sorry!!!A,2S,V")
 
-	  } else  if(type=="base"){
+	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: JT from the clinfun package, two.sided, X is vector
 # 	    for(testRun in 1:nrow(diffTests))
@@ -134,7 +136,7 @@ jt.star.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	    res <- c()
             stop("We do not have a asymptotic version for the Jonckheere-Terpstra test, sorry!!!")
           
-	  } else  if(type=="base"){
+	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: JT from the clinfun package, greater, X is vector
 # 	    for(testRun in 1:nrow(diffTests))
@@ -211,7 +213,7 @@ jt.star.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	    res <- c()
             stop("We do not have a two-sided version for the triple test, sorry!!!,A,S,V")
 	  
-	  } else  if(type=="base"){
+	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: JT from the clinfun package, smaller, X is vector
 # 	    for(testRun in 1:nrow(diffTests))
@@ -313,7 +315,7 @@ jt.star.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	    res <- c()
 	    warning("We do not have a two-sided version for the triple test, sorry!!!,A,T,M")
 
-	} else if(type=="base"){
+	} else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: base, two sided, X is matrix
 # 	   innerLoop <- function(i,testRun){
@@ -413,7 +415,7 @@ jt.star.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	    res <- c()
             stop("We do not have a two-sided version for the triple test, sorry!!!A,2S,V")
 
-	} else if(type=="base"){
+	} else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: base, greater, X is matrix
 # 	   innerLoop <- function(i,testRun){
@@ -515,7 +517,7 @@ jt.star.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	    res <- c()
 	    warning("We do not have this kind of type for the triple test!,A,S,M")
 
-	} else if(type=="base"){
+	} else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: base, smaller, X is matrix
 # 	   innerLoop <- function(i,testRun){

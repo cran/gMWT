@@ -1,3 +1,5 @@
+# Version: 30-11-2012, Daniel Fischer
+
 # This function takes the given group vector and relabels it with 1 for the smallest
 # value, 2 for the second smallest and so on
 # Daniel, Tampere, 03-10-2012
@@ -224,24 +226,20 @@ getSubMatrix <- function(mMatrix,i,j){
   if(i==1){
     rowLow <- 1
     rowUp <- mMatrix$n1
-  }
-  if(i==2){
+  } else if(i==2){
     rowLow <- mMatrix$n1+1
     rowUp <- mMatrix$n1+mMatrix$n2
-  }
-  if (i==3){
+  } else if (i==3){
     rowLow <- mMatrix$n1+mMatrix$n2 +1
     rowUp <- mMatrix$n1+mMatrix$n2+ mMatrix$n3
   }
   if(j==1){
     colLow <- 1
     colUp <- mMatrix$n1
-  }
-  if(j==2){
+  } else if(j==2){
     colLow <- mMatrix$n1+1
     colUp <- mMatrix$n1+mMatrix$n2
-  }
-  if (j==3){
+  } else if (j==3){
     colLow <- mMatrix$n1+mMatrix$n2 +1
     colUp <- mMatrix$n1+mMatrix$n2+ mMatrix$n3
   }

@@ -1,3 +1,5 @@
+# Version: 30-11-2012, Daniel Fischer
+
 # This function takes two vectors of observations x and y and calculates then 
 
 kwUt <- function(X,g,t){
