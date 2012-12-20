@@ -1,2 +1,3 @@
 - Clean up the code and optimise the function calls (join functions and control calls via options instead)
-- Add the asymptotic option for the tests
+- Add the asymptotic option for some tests
+- Axes are wrongly labeled in zoomed pictures, FIX THAT!!!

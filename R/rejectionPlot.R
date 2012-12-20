@@ -70,6 +70,7 @@ rejectionPlot <- function(X,lCol="red",xlim=NULL,crit="distance"){
      {
        lines(sigTests[1,],distances[i,],col=lCol[i])
      }
+    lines(c(-10,10),c(0,0),lty="dotted")
   } else {
     stop("We have a problem!!!\n")
   }

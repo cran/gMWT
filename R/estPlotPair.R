@@ -46,7 +46,8 @@ estPlotPair <- function(x,col,highlight,hlCol,pch,zoom,...){
     for(yRun in (xRun+1):Nprobs)
     {
       if(xRun==1 & yRun == 2) par(oma=c(0,3,3,0), mar=c(0,0,0,0))
-      if(xRun==(Nprobs-1) & yRun == Nprobs) par(bty="o")
+      #if(xRun==(Nprobs-1) & yRun == Nprobs) par(bty="o")
+      ifelse(yRun==(Nprobs), par(bty="o"),par(bty="c"))
 
       xValues <- getPairProb(x,pairComb[run,3],pairComb[run,4])
       xMin <- ifelse(zoom,min(xValues),0)
