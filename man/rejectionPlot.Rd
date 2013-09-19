@@ -10,7 +10,9 @@
   as a function of alpha.
 }
 \usage{
-  rejectionPlot(X,lCol="red",xlim=NULL,crit="distance")
+  rejectionPlot(X,lCol="red",xlim=NULL,crit=NULL,rejLine = NULL,
+                alpha = 0.01, rej.lty = c("dotted"), rej.col = "black",
+		incLegend=NULL)
 }
 
 \arguments{
@@ -18,6 +20,11 @@
   \item{lCol}{Vector of of line colors}
   \item{xlim}{An interval for alpha values (for the plotting). Default is [0,1].}
   \item{crit}{Shall the distance or the ratio be plotted, see details.}
+  \item{rejLine}{Type of rejection line. Options are \code{"bh","bonferroni"} and \code{"simes"}.}
+  \item{alpha}{Alpha for the multiple testing adjusted p-value- determines the slope of the rejection line.}
+  \item{rej.lty}{Line type of the rejection line.}
+  \item{rej.col}{Colour of the rejection line.}
+  \item{incLegend}{Position of a possible legend.}
 }
 
 \details{
@@ -30,9 +37,9 @@
 }
 
 \references{
-  Fischer, D., Oja, H., Sen, P.K., Schleutker, J., Wahlfors, T. (2012): Generalized Mann-Whitney Type Tests for Microarray Experiments, submitted article.\cr
+  Fischer, D., Oja, H., Schleutker, J., Sen, P.K., Wahlfors, T. (2013): Generalized Mann-Whitney Type Tests for Microarray Experiments, Scandinavian Journal of Statistic, to appear.\cr
  
-  Fischer, D., Oja, H. (2012): A permutation type test for calculating generalized Mann-Whitney tests, manuscript.
+  Fischer, D., Oja, H. (2013): Mann-Whitney Type Tests for Microarray Experiments: The R Package gMWT, submitted article.
 }
 
 \author{
@@ -44,16 +51,16 @@
 }
 
 \examples{
-X <- matrix(c(rnorm(500,2,1),rnorm(600,2,1),rnorm(400,2.5,1)),byrow=TRUE, ncol=10)
+X <- matrix(c(rnorm(50,2,1),rnorm(60,2,1),rnorm(40,2.5,1)),byrow=TRUE, ncol=10)
 colnames(X) <- letters[1:10]
-g <- c(rep(1,50),rep(2,60),rep(3,40))
+g <- c(rep(1,5),rep(2,6),rep(3,4))
 
 
 test1 <- gmw(X,g,test="mw",type="external",alternative="greater",goi=c(2,3))
 test2 <- gmw(X,g,test="kw",type="external")
 test3 <- gmw(X,g,test="jt",type="external",alternative="greater")
 
-tests <- rbind(test1,test2,test3)
+tests <- rbind(test1$p.values,test2$p.values,test3$p.values)
 
 rejectionPlot(tests,lCol=c("green","red","blue"))
 }

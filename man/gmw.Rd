@@ -10,7 +10,8 @@
 }
 \usage{
   gmw(X,g,goi=NULL,test="mw",type="permutation",prob="pair",nper=2000,
-  alternative="greater",mc=1,output="min", cluster=NULL, order = TRUE, alg=NULL)
+  alternative="greater",mc=1,output="min", cluster=NULL, order = TRUE,
+  keepPM= FALSE, mwAkw=FALSE, alg=NULL)
 }
 
 \arguments{
@@ -19,8 +20,7 @@
    to observations, see details.}
   \item{goi}{Vector with elements of \code{g}, defining for which treatment groups the test should be performed.}
   \item{test}{Specifies the test statistic.}
-  \item{type}{Permutation test (\code{"permutation"}) or normal approximation (\code{"approximation"}) for the
-   calculation of the p-values. Tests implemented
+  \item{type}{Permutation test (\code{"permutation"}) or asymptotic tests(\code{"asymptotic"}) for the calculation of the p-values. Tests implemented
 		in R-base \code{"external"} are also accessible, see details.}
   \item{prob}{This option is only for the Mann-Whitney test, see details.}
   \item{nper}{If type is \code{"permutation"} this option specifies how many permutations are used to calculate the p-value.}
@@ -29,7 +29,9 @@
   \item{output}{Determines the level of the details in the output.}
   \item{cluster}{A vector of same length as \code{g}, giving possible cluster information for performing the permutation test.}
   \item{order}{Boolean, shall all orders be calculated or only increasing orders?}
-  \item{alg}{Internal function, what algorithm should be used, see details.}
+  \item{keepPM}{Boolean, keep the permutation matrices, required for Westfall & Young multiple testing adjustment.}
+  \item{mwAkw}{Boolean or numeric, if \code{TRUE} pairwise Mann-Whitney tests are performed after the Kruskal-Wallis test. If \code{numeric} MW tests are only performed for KW tests with smaller p-value than that value.}
+  \item{alg}{Internal function, what permutation algorithm should be used. Shouln't be changed by the user.}
 }
 
 \details{
@@ -47,10 +49,11 @@
   \code{'mw'} for the Mann-Whitney / Wilcoxon test and 
   \code{'kw'} for the Kruskal-Wallis test. See also reference [1] for further details.
 
-  The option \code{type} is used to decide how the p-values are computed. If \code{test='mw'}, 
-  \code{test='kw'} or \code{test='jt'} then possible options are 
-  \code{type='external'} and \code{type='permutation'}. If  \code{test='uit'}, \code{test='triple'} or \code{test='jt*'}.
-  one can choose options \code{type='permutation'} and \code{type='asymptotic'}.
+  The option \code{type} is used to decide how the p-values are computed. For all tests are permutation type tests available
+  and the option for that is \code{type="permutation"}. In addition for \code{test='mw'}, \code{test='kw'} or \code{test='jt'} 
+  also the option \code{type='external'} is available. This calls then the code from the base system or other, imported packages.
+  For \code{test='uit'} there is also an asymptotic test (\code{type="asymptotic"}) available. For \code{test='triple'} or \code{test='jt*'}
+  asymptotic implementations are currently under development.
 
   The \code{prob} option is only for the Mann-Whitney test. For the option \code{"single"}, the tests are to
   compare a single group versus all the other groups. The option \code{"pair"} makes all pair-wise comparisons
@@ -61,9 +64,8 @@
   the groups with larger group numbers tend to have larger observations as well. The function \code{createGroups}
   may be used to renumber the groups, if needed. 
  
-  The \code{mc} option is only valid if \code{X} is a matrix and the used OS is Linux, because the parallelisation is based on the package parallel, and that again is
-  based on the concept of forking, which is currently only supported under Linux. 
-
+  The \code{mc} option is only valid if \code{X} is a matrix and the used OS is Linux, because the parallelisation is based
+  on the package parallel, and that again is based on the concept of forking, which is currently only supported under Linux. 
   
   The option \code{output} can be used to control how detailed the output is. The default \code{"min"}  reports just 
   the matrix of p-values in a matrix (columns=variables, rows=tests). If \code{output="full"},
@@ -71,6 +73,15 @@
 
   The option \code{cluster} is an additional object for the Kruskal-Wallis permutation test. For cluster-dependent
   observation, only the permutations within clusters are acceptable for the p-value calculation.
+
+  In the \code{getSigTests} function it is possible to apply the Westfall & Young multiple testing method. In this approach the
+  permutation matrix is used to adjust for multiple testing, hence if one wishes to apply this method, the only option for
+  \code{type} is \code{"permutation"}. In addition the boolean flag \code{keepPM} has to be set to \code{TRUE}. Is default is
+  to drop the permutation matrix after each run in order to save memory.
+
+  If a Kruskal-Wallis test is performed, there is also the option to perform afterwards paiwise Mann-Whitney tests to identify concrete, deviating groups.
+  If one wishes to do that just for significant variables one can set the option \code{mwAkw} to the corresponding significance level. If \code{mwAkw} is
+  set to \code{TRUE} (or respective \code{1}) the Mann-Whitney tests are performed for all variables. 
 
   There is also a function to choose the used calculation algorithm, options here are \code{"Rsubmat"}, \code{"Rnaive"}, \code{"Csubmat"}, \code{"Cnaive"}. The
   purpose is just for validation.
@@ -81,9 +92,11 @@
 }
 
 \references{
-  [1] Fischer, D., Oja, H., Sen, P.K., Schleutker, J., Wahlfors, T. (2012): Generalized Mann-Whitney Type Tests for Microarray Experiments, submitted article.\cr
+  Fischer, D., Oja, H., Schleutker, J., Sen, P.K., Wahlfors, T. (2013): Generalized Mann-Whitney Type Tests for Microarray Experiments, Scandinavian Journal of Statistic, to appear.\cr
 
-  [2] Fischer, D., Oja, H. (2012): A permutation type test for calculating generalized Mann-Whitney tests, manuscript.
+  Fischer, D., Oja, H. (2013): Mann-Whitney Type Tests for Microarray Experiments: The R Package gMWT, submitted article.
+
+  Westfall, P.H. and Young, S.S. (1993): Resampling-Based Multiple Testing: Examples and Methods for p-Value Adjustment. Wiley, New York.
 }
 
 \author{

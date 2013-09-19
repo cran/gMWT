@@ -1,9 +1,14 @@
-# Version: 30-11-2012, Daniel Fischer
+# Version: 03-07-2013
 
-uit.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
+# Changes:
+# 28-06-2013: Added the option keepPM, DF
+# 30-06-2013: Finished the keepPM option, DF
+# 03-07-2013: Adjusted the warning/stop messages, DF
+
+uit.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output, keepPM){
 
  res <- list()
- diffTests <- getComb(goi,"triple",order=T)
+ diffTests <- getComb(goi, "triple", order=T)
 
  METHOD <- c("********* Union-Intersection Test *********")
  DNAME <- PARAMETERS[[1]]
@@ -18,22 +23,28 @@ uit.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 
 ## Case: X is vector
     if(XisVector){
+
+## Alternative: two-sided
 ##---------------------------------------------------------------------------------------------------------------------------------------
        if(alternative=="two.sided"){
+	  stop("There is no 2-sided alternative available for UIT, please choose 'greater'!")
 	  if(type=="permutation"){
+#----------------------------------------------------------------------------------------------------------------------------------------
+# Case: permutation, two sided, X is vector
 	    res <- c()
-	    stop("There is no 2-sided alternative available, please choose greater!")
+	    stop("There is no permutation type test implemented for the two-sided UIT!")
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, two sided, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the UIT! code(A,2S,V)")
+	    stop("There is no asymptotic test implemented for the two-sided UIT!")
           } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, two sided, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the UIT! code(O,2S,V)")
+	    stop("There is no such test type implemented for the two-sided UIT!")
 	  }
+## Alternative: greater
 ##---------------------------------------------------------------------------------------------------------------------------------------
        } else if(alternative=="greater"){
 	  if(type=="permutation"){
@@ -99,7 +110,7 @@ uit.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, greater, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the UIT!,O,G,V")
+	    stop("We do not have this kind of type for the UIT!")
 	  }
        } else if(alternative=="smaller"){
 ##---------------------------------------------------------------------------------------------------------------------------------------
@@ -110,18 +121,18 @@ uit.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	    stop("There is no smaller alternative available, please choose greater!")
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
-# Case: asymptotic, greater, X is vector
+# Case: asymptotic, smaller, X is vector
 	    res <- c()
-            stop("We do not have an asymptotic greater version for the UIT, sorry!!!,A,S,V")
+            stop("There is no smaller alternative available, please choose greater!")
           } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, one sided, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the UIT!,O,S,V")
+	    stop("There is no smaller alternative available, please choose greater!")
 	  }
        } else {
 	    res <- c()
-	    stop("There is no other option than small, greater or two-sided...All other")
+	    stop("There is no other option than small, greater or two-sided...")
        }
 ## Case: X is a matrix
     } else{
@@ -146,12 +157,12 @@ uit.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, two sided, X is matrix
 	    res <- c()
-            stop("We do not have a two-sided version for the UIT, sorry!!!,A,T,M")
+            stop("There is no 2-sided alternative available, please choose greater!")
           } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, two sided, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the UIT!,O,T,M")
+	    stop("There is no 2-sided alternative available, please choose greater!")
 	  }
     } else if(alternative=="greater"){
 	  if(type=="permutation"){
@@ -164,15 +175,45 @@ uit.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	      pValue <- sum(obsValue<=nullDist)/nper
 	      return(list(pValue=pValue,obsValue=obsValue))
             }
+
+	    innerLoopPM <- function(i,testRun){
+	      nullDist <- uitPTest(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper)
+	      obsValue <- uit.C(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i])
+	      pValue <- sum(obsValue<=nullDist)/nper
+	      return(list(pValue=pValue,obsValue=obsValue, nullDist=nullDist))
+            }
+
+	    if(keepPM){
+	        nullDistRES <- list()
+		STATISTIC <- list()
+		for(i in 1:nrow(diffTests)){
+		  nullDistRES[[i]] <- matrix(0, ncol=dimX[2],nrow=nper)
+		  STATISTIC[[i]] <- c(rep(-1,dimX[2]))
+		}
+	    }	    
 	    
 	    for(testRun in 1:nrow(diffTests))
 	    {
 	      resTemp <- list()
-	      resInner <- unlist(mclapply(c(1:dimX[2]),innerLoop,testRun,mc.cores=mc))
+
+	      if(keepPM==TRUE){
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoopPM,testRun=testRun,mc.cores=mc))
+		#nullDistRES <- matrix(0, ncol=dimX[2],nrow=nper)
+              } else {
+   	        resInner <- unlist(mclapply(c(1:dimX[2]),innerLoop,testRun,mc.cores=mc))
+              }
+
 	      for(i in 1:dimX[2])
 	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
+		if(keepPM==TRUE){
+                  PVAL <- resInner[nper*(i-1) + 2*(i) - 1]
+                  STATISTIC[[testRun]][i] <- resInner[nper*(i-1) + 2*i]
+                  nullDistRES[[testRun]][,i] <- resInner[(nper*(i-1) + 2*i + 1):(nper*i + 2*i)]
+                } else {
+		  PVAL <- resInner[2*i-1]
+                  STATISTIC <- resInner[2*i]
+		}
+		obsValue <- STATISTIC
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "greater"
 		DNAME <- paste("Data:",deparse(substitute(X)),", Groups:",deparse(substitute(g)),", Order: max(P",diffTests[testRun,1],diffTests[testRun,3],",P",diffTests[testRun,2],diffTests[testRun,3],")",sep="")
@@ -240,7 +281,7 @@ uit.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	    }       
           } else {
 	    res <- c()
-	    warning("We do not have this kind of type for the UIT!,O,G,M")
+	    warning("We do not have this kind of type for the UIT!")
 	  }
     } else if(alternative=="smaller"){
      #  res <- do.call(rbind,mclapply(c(1:dimX[2]),innerLoop,mc.cores=mc))
@@ -248,21 +289,26 @@ uit.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: permutation, smaller, X is matrix
 	    res <- c()
-	    stop("There is no 2-sided alternative available, please choose greater!")
+	    stop("There is no smaller alternative available, please choose greater!")
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, smaller, X is matrix
 
 	    res <- c()
-	    stop("We do not have this kind of type for the UIT!,A,S,M")
+	    stop("We do not have this kind of type for the UIT!")
           } else {
 	    res <- c()
-	    stop("We do not have this kind of type for the UIT!,O,S,M")
+	    stop("We do not have this kind of type for the UIT!")
 	  }
     } else {
 	    res <- c()
-	    stop("There are no other alternatives possible, sorry! All other....")
+	    stop("There are no other alternatives possible, sorry!")
      }
+  }
+  if(type=="permutation"){
+    ifelse(keepPM,res <- list(p.values=res, nullDist=nullDistRES, obsValue=obsValue), res <- list(p.values=res))
+  } else {
+    res <- list(p.values=res)
   }
   res
 }

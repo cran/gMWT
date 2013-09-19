@@ -65,8 +65,8 @@ perm.triple <- function(x,y,z,nper,algorithm){
     }
 
   }else if(algorithm=="Csubmat"){
-      result <- as.vector(getP.Csub(x,y,z,nper)$result)
-      result <- result/(Nx*Ny*Nz)
+      result <- as.vector(getP.Csub(x,y,z,nper))
+      #result <- result/(Nx*Ny*Nz)
 
   }else {
     stop("We can't do that!!!")

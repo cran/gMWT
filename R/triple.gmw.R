@@ -1,9 +1,12 @@
-# Version: 30-11-2012, Daniel Fischer
+# Changes:
+# 30-06-2013, Added the keepPM option, DF
 
-triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
+triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg, keepPM,order){
 
  res <- list()
- diffTests <- getComb(goi,"triple",order=T)
+ pm <- NULL
+ if(keepPM) pm <- matrix(NA,ncol=ncol(X),nrow=nper)
+ diffTests <- getComb(goi,"triple",order=order)
 
  METHOD <- c("********* Triple based Test *********")
  DNAME <- PARAMETERS[[1]]
@@ -38,7 +41,7 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6 or P",diffTests[testRun,3],diffTests[testRun,2],diffTests[testRun,1]," > 1/6",sep="")
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6 or P",diffTests[testRun,3],diffTests[testRun,2],diffTests[testRun,1]," > 1/6",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -61,7 +64,7 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, two sided, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the triple test!,O,2S,V")
+	    stop("We do not have this kind of type for the triple test!")
 	  }
 ##---------------------------------------------------------------------------------------------------------------------------------------
        } else if(alternative=="greater"){
@@ -82,7 +85,7 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6",sep="")
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -100,12 +103,12 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is vector
 	    res <- c()
-            stop("We do not have a asymptotic greater version for the triple test, sorry!!!A,2S,V")
+            stop("We do not have a asymptotic greater version for the triple test, sorry!!!")
           } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, greater, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the triple test!,O,G,V")
+	    stop("We do not have this kind of type for the triple test!")
 	  }
        } else if(alternative=="smaller"){
 ##---------------------------------------------------------------------------------------------------------------------------------------
@@ -126,7 +129,7 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," < 1/6",sep="")
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," < 1/6",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -144,16 +147,16 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is vector
 	    res <- c()
-            stop("We do not have a two-sided version for the triple test, sorry!!!,A,S,V")
+            stop("We do not have a two-sided version for the triple test, sorry!!!")
           } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, one sided, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the triple test!,O,S,V")
+	    stop("We do not have this kind of type for the triple test!")
 	  }
        } else {
 	    res <- c()
-	    stop("There is no other option than small, greater or two-sided...All other")
+	    stop("There is no other option than small, greater or two-sided...")
        }
 ## Case: X is a matrix
     } else{
@@ -175,17 +178,48 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
              obsValue1 <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i]))
              obsValue2 <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,3],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,1],i]))
              pValue <- min(sum(nullDist1>=obsValue1)/nper,sum(nullDist1>=obsValue2)/nper)
-	     return(list(pValue=pValue,obsValue=max(obsValue1,obsValue2)))
+             return(list(pValue=pValue,obsValue=max(obsValue1,obsValue2)))
             }
+
+	    innerLoopPM <- function(i,testRun){
+             nullDist1 <- perm.triple(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper,algorithm=alg)
+             obsValue1 <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i]))
+             obsValue2 <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,3],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,1],i]))
+             pValue <- min(sum(nullDist1>=obsValue1)/nper,sum(nullDist1>=obsValue2)/nper)
+             return(list(pValue=pValue,obsValue=max(obsValue1,obsValue2), nullDist=nullDist1))
+            }
+
+	    if(keepPM){
+	        nullDistRES <- list()
+		STATISTIC <- list()
+		for(i in 1:nrow(diffTests)){
+		  nullDistRES[[i]] <- matrix(0, ncol=dimX[2],nrow=nper)
+		  STATISTIC[[i]] <- c(rep(-1,dimX[2]))
+		}
+	    }	 
 
 	    for(testRun in 1:nrow(diffTests))
 	    { 
 	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+
+	      if(keepPM==TRUE){
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoopPM,testRun=testRun,mc.cores=mc))
+		#nullDistRES <- matrix(0, ncol=dimX[2],nrow=nper)
+              } else {
+   	        resInner <- unlist(mclapply(c(1:dimX[2]),innerLoop,testRun,mc.cores=mc))
+              }
+
 	      for(i in 1:dimX[2])
 	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
+		if(keepPM==TRUE){
+                  PVAL <- resInner[nper*(i-1) + 2*(i) - 1]
+                  STATISTIC[[testRun]][i] <- resInner[nper*(i-1) + 2*i]
+                  nullDistRES[[testRun]][,i] <- resInner[(nper*(i-1) + 2*i + 1):(nper*i + 2*i)]
+                } else {
+		  PVAL <- resInner[2*i-1]
+                  STATISTIC <- resInner[2*i]
+		}
+		obsValue <- STATISTIC
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "two.sided"
 		names(STATISTIC) <- "obs.value"
@@ -193,7 +227,7 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6 or P",diffTests[testRun,3],diffTests[testRun,2],diffTests[testRun,1]," > 1/6",sep="")
+	     names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6 or P",diffTests[testRun,3],diffTests[testRun,2],diffTests[testRun,1]," > 1/6",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -232,14 +266,45 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 	     return(list(pValue=pValue,obsValue=obsValue))
             }
 
+	   innerLoopPM <- function(i,testRun){
+             nullDist <- perm.triple(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper,algorithm=alg)
+             obsValue <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i]))
+             pValue <- sum(nullDist>=obsValue)/nper
+	     return(list(pValue=pValue,obsValue=obsValue, nullDist=nullDist))
+            }
+
+	    if(keepPM){
+	        nullDistRES <- list()
+		STATISTIC <- list()
+		for(i in 1:nrow(diffTests)){
+		  nullDistRES[[i]] <- matrix(0, ncol=dimX[2],nrow=nper)
+		  STATISTIC[[i]] <- c(rep(-1,dimX[2]))
+		}
+	    }
+
 	    for(testRun in 1:nrow(diffTests))
 	    { 
 	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+
+	      if(keepPM==TRUE){
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoopPM,testRun=testRun,mc.cores=mc))
+		#nullDistRES <- matrix(0, ncol=dimX[2],nrow=nper)
+              } else {
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+              }
+
 	      for(i in 1:dimX[2])
 	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
+
+		if(keepPM==TRUE){
+                  PVAL <- resInner[nper*(i-1) + 2*(i) - 1]
+                  STATISTIC[[testRun]][i] <- resInner[nper*(i-1) + 2*i]
+                  nullDistRES[[testRun]][,i] <- resInner[(nper*(i-1) + 2*i + 1):(nper*i + 2*i)]
+                } else {
+		  PVAL <- resInner[2*i-1]
+                  STATISTIC <- resInner[2*i]
+		}
+		obsValue <- STATISTIC
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "greater"
 		names(STATISTIC) <- "obs.value"
@@ -247,7 +312,7 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6",sep="")
+	     names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -283,14 +348,45 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 	     return(list(pValue=pValue,obsValue=obsValue))
             }
 
+	    innerLoopPM <- function(i,testRun){
+             nullDist <- perm.triple(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i],nper,algorithm=alg)
+             obsValue <- as.numeric(getP.Cnaive(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,3],i]))
+             pValue <- sum(nullDist<obsValue)/nper
+	     return(list(pValue=pValue,obsValue=obsValue, nullDist=nullDist))
+            }
+
+	    if(keepPM){
+	        nullDistRES <- list()
+		STATISTIC <- list()
+		for(i in 1:nrow(diffTests)){
+		  nullDistRES[[i]] <- matrix(0, ncol=dimX[2],nrow=nper)
+		  STATISTIC[[i]] <- c(rep(-1,dimX[2]))
+		}
+	    }
+
 	    for(testRun in 1:nrow(diffTests))
 	    { 
 	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+
+	      if(keepPM==TRUE){
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoopPM,testRun=testRun,mc.cores=mc))
+		#nullDistRES <- matrix(0, ncol=dimX[2],nrow=nper)
+              } else {
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+              }
+
 	      for(i in 1:dimX[2])
 	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
+
+		if(keepPM==TRUE){
+                  PVAL <- resInner[nper*(i-1) + 2*(i) - 1]
+                  STATISTIC[[testRun]][i] <- resInner[nper*(i-1) + 2*i]
+                  nullDistRES[[testRun]][,i] <- resInner[(nper*(i-1) + 2*i + 1):(nper*i + 2*i)]
+                } else {
+		  PVAL <- resInner[2*i-1]
+                  STATISTIC <- resInner[2*i]
+		}
+		obsValue <- STATISTIC
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "smaller"
 		names(STATISTIC) <- "obs.value"
@@ -298,7 +394,7 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," < 1/6",sep="")
+	     names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," < 1/6",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -327,6 +423,11 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg){
 	    res <- c()
 	    stop("There are no other alternatives possible, sorry! All other....")
      }
+  }
+  if(type=="permutation"){
+    ifelse(keepPM,res <- list(p.values=res, nullDist=nullDistRES, obsValue=obsValue), res <- list(p.values=res))
+  } else {
+    res <- list(p.values=res)
   }
   res
 }

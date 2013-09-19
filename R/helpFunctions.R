@@ -4,17 +4,17 @@
 # value, 2 for the second smallest and so on
 # Daniel, Tampere, 03-10-2012
 # Function tested on 03-10-2012
-relabelGroups <- function(g){
-  N <- length(g)
-  gLables <- names(table(g))
-  gReturn <- g 
-  for(i in 1:length(gLables))
-  {
-    gReturn[g==gLables[i]] <- i
+  relabelGroups <- function(g){
+    N <- length(g)
+    gLables <- names(table(g))
+    gReturn <- g 
+    for(i in 1:length(gLables))
+    {
+      gReturn[g==gLables[i]] <- i
+    }
+    gReturn <- as.numeric(gReturn)
+    return(gReturn)
   }
-  gReturn <- as.numeric(gReturn)
-  return(gReturn)
-}
 #----------------------------------------------------------------------------------------------------------------------------------------------
 
 # This calculates the amount of possible probability estimatores, given a set of group labels, a type of PE and if the order matters:

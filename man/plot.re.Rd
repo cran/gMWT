@@ -5,7 +5,7 @@
 
 \title{Plot an re Object}
 \description{
-  Plots an \code{re} object.
+  Plots an \code{re} object returned from the function \code{getSigTests}.
 }
 \usage{
  \method{plot}{re}(x,...)
@@ -18,6 +18,10 @@
 
 \details{
 This function plots a rejection plot for an existing \code{re} object.
+}
+
+\seealso{
+\code{\link[gMWT]{getSigTests}}
 }
 
 \examples{

@@ -80,6 +80,6 @@ RcppExport SEXP subMat(SEXP x, SEXP nx, SEXP ny, SEXP nz, SEXP nper){
    
    
     List res;
-    res["result"] = result;
+    res["result"] =  result/(NX*NY*NZ);
     return res;
 }

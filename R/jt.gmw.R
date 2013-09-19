@@ -1,6 +1,9 @@
-# Version: 30-11-2012, Daniel Fischer
+# Version: 03-07-2012, Daniel Fischer
 
-jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
+# Changes:
+# 03-07-2013: Added the keepPM option
+
+jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output, keepPM){
 
  res <- list()
  diffTests <- t(as.matrix(sort(goi)))
@@ -38,7 +41,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	      names(res)[testRun] <- paste("H1:",paste(diffTests[testRun,],collapse="<"), "!= ...")
 	    }
 	    if(output=="min")
 	    {
@@ -56,7 +59,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, two sided, X is vector
 	    res <- c()
-            stop("We do not have a two-sided, asymptotic version for the Jonckheere-Terpstra test, sorry!!!\n")
+            stop("We do not have an asymptotic version for the Jonckheere-Terpstra test, sorry!")
 
 	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
@@ -74,7 +77,8 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	      #names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+              names(res)[testRun] <- paste("H1:",paste(diffTests[testRun,],collapse="<"), "!= ...")
 	    }
 	    if(output=="min")
 	    {
@@ -114,7 +118,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	      names(res)[testRun] <- paste("H1:",paste(diffTests[testRun,],collapse="<"), "> ...")
 	    }
 	    if(output=="min")
 	    {
@@ -132,7 +136,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is vector
 	    res <- c()
-            stop("We do not have a asymptotic, greater version of the Jonckheere-Terpstra test, sorry!!!\n")
+            stop("We do not have an asymptotic version of the Jonckheere-Terpstra test, sorry!\n")
           
 	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
@@ -150,7 +154,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	      names(res)[testRun] <- paste("H1:",paste(diffTests[testRun,],collapse="<"), "> ...")
 	    }
 	    if(output=="min")
 	    {
@@ -168,7 +172,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, greater, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the Jonckheere-Terpstra test!\n")
+	    stop("We do not have this kind of type for the Jonckheere-Terpstra test, sorry!\n")
 	  }
        } else if(alternative=="smaller"){
 ##---------------------------------------------------------------------------------------------------------------------------------------
@@ -190,7 +194,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	      names(res)[testRun] <- paste("H1:",paste(diffTests[testRun,],collapse="<"), "< ...")
 	    }
 	    if(output=="min")
 	    {
@@ -208,7 +212,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, smaller, X is vector
 	    res <- c()
-            stop("We do not have an asymptotic, smaller version for the Jonckheere-Terpstra test, sorry!!!\n")
+            stop("We do not have an asymptotic version for the Jonckheere-Terpstra test, sorry!")
 	  
 	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
@@ -226,7 +230,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	      names(res)[testRun] <- paste("H1:",paste(diffTests[testRun,],collapse="<"), "< ...")
 	    }
 	    if(output=="min")
 	    {
@@ -243,11 +247,11 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, one sided, X is vector
 	    res <- c()
-	    stop("We do not have this kind of type for the Jonckheere-Terpstra test!")
+	    stop("We do not have this kind of type for the Jonckheere-Terpstra test, sorry!")
 	  }
        } else {
 	    res <- c()
-	    stop("There is no other option than smaller, greater or two-sided...All other")
+	    stop("There is no other option than smaller, greater or two-sided...")
        }
 ## Case: X is a matrix
     } else{
@@ -272,22 +276,52 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	     return(list(pValue=pValue,obsValue=obsValue))
             }
 
+	   innerLoopPM <- function(i,testRun){
+             nullDist <- jtPTest(X[is.element(g,diffTests[testRun,]),i],g[is.element(g,diffTests[testRun,])],nper) 
+             obsValue <- jt(X[is.element(g,diffTests[testRun,]),i],g[is.element(g,diffTests[testRun,])])
+             pValue <- 2*min(sum(nullDist<obsValue)/nper,sum(nullDist>=obsValue)/nper)
+	     return(list(pValue=pValue,obsValue=obsValue, nullDist=nullDist))
+            }
+
+	    if(keepPM){
+	        nullDistRES <- list()
+		STATISTIC <- list()
+		for(i in 1:nrow(diffTests)){
+		  nullDistRES[[i]] <- matrix(0, ncol=dimX[2],nrow=nper)
+		  STATISTIC[[i]] <- c(rep(-1,dimX[2]))
+		}
+	    }
+
 	    for(testRun in 1:nrow(diffTests))
 	    { 
 	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+
+	      if(keepPM==TRUE){
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoopPM,testRun=testRun,mc.cores=mc))
+		#nullDistRES <- matrix(0, ncol=dimX[2],nrow=nper)
+              } else {
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+              }
+
 	      for(i in 1:dimX[2])
 	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
+		if(keepPM==TRUE){
+                  PVAL <- resInner[nper*(i-1) + 2*(i) - 1]
+                  STATISTIC[[testRun]][i] <- resInner[nper*(i-1) + 2*i]
+                  nullDistRES[[testRun]][,i] <- resInner[(nper*(i-1) + 2*i + 1):(nper*i + 2*i)]
+                } else {
+		  PVAL <- resInner[2*i-1]
+                  STATISTIC <- resInner[2*i]
+		}
+		obsValue <- STATISTIC
 		names(PVAL) <- "p.value"
-		ALTERNATIVE <- "smaller"
+		ALTERNATIVE <- "two.sided"
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	     names(res)[testRun] <- paste("H1:",paste(diffTests[testRun,],collapse="<"), "!= ...")
 	    }
 	    if(output=="min")
 	    {
@@ -308,7 +342,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, two sided, X is matrix
 	    res <- c()
-	    stop("We do not have a two-sided asymptotic version for the Jonckheere-Terpstra test, sorry!!!")
+	    stop("We do not have an asymptotic version for the Jonckheere-Terpstra test, sorry!")
 
 	} else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
@@ -335,7 +369,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	     names(res)[testRun] <- paste("H1:",paste(diffTests[testRun,],collapse="<"), "!= ...")
 	    }
 	    if(output=="min")
 	    {
@@ -370,22 +404,52 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	     return(list(pValue=pValue,obsValue=obsValue))
             }
 
+	   innerLoopPM <- function(i,testRun){
+             nullDist <- jtPTest(X[is.element(g,diffTests[testRun,]),i],g[is.element(g,diffTests[testRun,])],nper) 
+             obsValue <- jt(X[is.element(g,diffTests[testRun,]),i],g[is.element(g,diffTests[testRun,])])
+             pValue <- sum(nullDist>=obsValue)/nper
+	     return(list(pValue=pValue,obsValue=obsValue, nullDist=nullDist))
+            }
+
+	    if(keepPM){
+	        nullDistRES <- list()
+		STATISTIC <- list()
+		for(i in 1:nrow(diffTests)){
+		  nullDistRES[[i]] <- matrix(0, ncol=dimX[2],nrow=nper)
+		  STATISTIC[[i]] <- c(rep(-1,dimX[2]))
+		}
+	    }
+
 	    for(testRun in 1:nrow(diffTests))
 	    { 
 	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+
+	      if(keepPM==TRUE){
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoopPM,testRun=testRun,mc.cores=mc))
+		#nullDistRES <- matrix(0, ncol=dimX[2],nrow=nper)
+              } else {
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+              }
+
 	      for(i in 1:dimX[2])
 	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
+		if(keepPM==TRUE){
+                  PVAL <- resInner[nper*(i-1) + 2*(i) - 1]
+                  STATISTIC[[testRun]][i] <- resInner[nper*(i-1) + 2*i]
+                  nullDistRES[[testRun]][,i] <- resInner[(nper*(i-1) + 2*i + 1):(nper*i + 2*i)]
+                } else {
+		  PVAL <- resInner[2*i-1]
+                  STATISTIC <- resInner[2*i]
+		}
+		obsValue <- STATISTIC
 		names(PVAL) <- "p.value"
-		ALTERNATIVE <- "smaller"
+		ALTERNATIVE <- "greater"
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	     names(res)[testRun] <- paste("H1:",paste(diffTests[testRun,],collapse="<"), "> ...")
 	    }
 	    if(output=="min")
 	    {
@@ -405,7 +469,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is matrix
 	    res <- c()
-            stop("We do not have an asymptotic, greater version for the Jonckheere-Terpstra test, sorry!!!")
+            stop("We do not have an asymptotic version for the Jonckheere-Terpstra test, sorry!")
 
 	} else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
@@ -426,13 +490,13 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		PVAL <- resInner[2*i-1]
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
-		ALTERNATIVE <- "increasing"
+		ALTERNATIVE <- "greater"
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	     names(res)[testRun] <- paste("H1:",paste(diffTests[testRun,],collapse="<"), "> ...")
 	    }
 	    if(output=="min")
 	    {
@@ -453,7 +517,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 
 	  } else {
 	    res <- c()
-	    stop("We do not have this kind of type for the Jonckheere-Terpstra test!")
+	    stop("We do not have this kind of type for the Jonckheere-Terpstra test, sorry!")
 	  }
     } else if(alternative=="smaller"){
 	  if(type=="permutation"){
@@ -467,14 +531,44 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 	     return(list(pValue=pValue,obsValue=obsValue))
             }
 
+	   innerLoopPM <- function(i,testRun){
+             nullDist <- jtPTest(X[is.element(g,diffTests[testRun,]),i],g[is.element(g,diffTests[testRun,])],nper) 
+             obsValue <- jt(X[is.element(g,diffTests[testRun,]),i],g[is.element(g,diffTests[testRun,])])
+             pValue <- sum(nullDist<obsValue)/nper
+	     return(list(pValue=pValue,obsValue=obsValue, nullDist=nullDist))
+            }
+
+	    if(keepPM){
+	        nullDistRES <- list()
+		STATISTIC <- list()
+		for(i in 1:nrow(diffTests)){
+		  nullDistRES[[i]] <- matrix(0, ncol=dimX[2],nrow=nper)
+		  STATISTIC[[i]] <- c(rep(-1,dimX[2]))
+		}
+	    }
+
 	    for(testRun in 1:nrow(diffTests))
 	    { 
 	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+
+	      if(keepPM==TRUE){
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoopPM,testRun=testRun,mc.cores=mc))
+		#nullDistRES <- matrix(0, ncol=dimX[2],nrow=nper)
+              } else {
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+              }
+
 	      for(i in 1:dimX[2])
 	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
+		if(keepPM==TRUE){
+                  PVAL <- resInner[nper*(i-1) + 2*(i) - 1]
+                  STATISTIC[[testRun]][i] <- resInner[nper*(i-1) + 2*i]
+                  nullDistRES[[testRun]][,i] <- resInner[(nper*(i-1) + 2*i + 1):(nper*i + 2*i)]
+                } else {
+		  PVAL <- resInner[2*i-1]
+                  STATISTIC <- resInner[2*i]
+		}
+		obsValue <- STATISTIC
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "smaller"
 		names(STATISTIC) <- "obs.value"
@@ -482,7 +576,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	     names(res)[testRun] <- paste("H1:",paste(diffTests[testRun,],collapse="<"), "< ...")
 	    }
 	    if(output=="min")
 	    {
@@ -503,7 +597,7 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, smaller, X is matrix
 	    res <- c()
-	    warning("We do not have an asymptotic smaller version for the Jonckheere-Terpstra test!")
+	    warning("We do not have an asymptotic version for the Jonckheere-Terpstra test, sorry!")
 
 	} else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
@@ -524,13 +618,13 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 		PVAL <- resInner[2*i-1]
 		STATISTIC <- resInner[2*i]
 		names(PVAL) <- "p.value"
-		ALTERNATIVE <- "decreasing"
+		ALTERNATIVE <- "smaller"
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	     names(res)[testRun] <- paste("H1:",paste(diffTests[testRun,],collapse="<"), "< ...")
 	    }
 	    if(output=="min")
 	    {
@@ -552,15 +646,20 @@ jt.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output){
 
           } else {
 	    res <- c()
-	    stop("We do not have this kind of type for the Jonckheere-Terpstra test!")
+	    stop("We do not have this kind of type for the Jonckheere-Terpstra test, sorry!")
 	  }
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other, other, X is matrix
 
     } else {
 	    res <- c()
-	    stop("There are no other alternatives possible, sorry! All other....")
+	    stop("There are no other alternatives possible, sorry!")
      }
+  }
+  if(type=="permutation"){
+    ifelse(keepPM,res <- list(p.values=res, nullDist=nullDistRES, obsValue=obsValue), res <- list(p.values=res))
+  } else {
+    res <- list(p.values=res)
   }
   res
 }

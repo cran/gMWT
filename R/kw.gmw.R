@@ -1,6 +1,9 @@
-# Version: 30-11-2012, Daniel Fischer
+# Changes:
+# 03-07-2013: Added the keepPM option, DF
+# 06-07-2013: Made the output consistent with other tests, DF
+# 19-09-2013: Fixed a naming issue with the innerLoop functions, DF
 
-kw.gmw <- function(X,g,cluster,goi,type,nper,mc,PARAMETERS,output){
+kw.gmw <- function(X,g,cluster,goi,type,nper,mc,PARAMETERS,output, keepPM){
 
  res <- list()
  diffTests <- t(as.matrix(sort(goi)))
@@ -45,7 +48,8 @@ kw.gmw <- function(X,g,cluster,goi,type,nper,mc,PARAMETERS,output){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	      #names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+              names(res)[testRun] <- paste("H1: P_tt' != 0.5 for some t,t'")
 	    }
 	    if(output=="min")
 	    {
@@ -80,7 +84,8 @@ kw.gmw <- function(X,g,cluster,goi,type,nper,mc,PARAMETERS,output){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	      #names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+              names(res)[testRun] <- paste("H1: P_tt' != 0.5 for some t,t'")
 	    }
 	    if(output=="min")
 	    {
@@ -114,21 +119,51 @@ kw.gmw <- function(X,g,cluster,goi,type,nper,mc,PARAMETERS,output){
    if(type=="permutation"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: permutation, two sided, X is matrix
-	   innerLoop2 <- function(i,testRun,nper){
+	   innerLoop <- function(i,testRun,nper){
              nullDist <- kwNullDist(X[,i],g,goi,nper)
 	     obsValue <- kwObs(X[,i],g,goi)
              pValue <- sum(nullDist>obsValue)/nper
 	     return(list(pValue=pValue,obsValue=obsValue))
             }
 
+	   innerLoopPM <- function(i,testRun,nper){
+             nullDist <- kwNullDist(X[,i],g,goi,nper)
+	     obsValue <- kwObs(X[,i],g,goi)
+             pValue <- sum(nullDist>obsValue)/nper
+	     return(list(pValue=pValue,obsValue=obsValue, nullDist=nullDist))
+            }
+
+	    if(keepPM){
+	        nullDistRES <- list()
+		STATISTIC <- list()
+		for(i in 1:nrow(diffTests)){
+		  nullDistRES[[i]] <- matrix(0, ncol=dimX[2],nrow=nper)
+		  STATISTIC[[i]] <- c(rep(-1,dimX[2]))
+		}
+	    }
+
 	    for(testRun in 1:nrow(diffTests))
 	    { 
 	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop2,testRun=testRun,nper=nper,mc.cores=mc))
+
+	      if(keepPM==TRUE){
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoopPM,testRun=testRun, nper=nper,mc.cores=mc))
+		#nullDistRES <- matrix(0, ncol=dimX[2],nrow=nper)
+              } else {
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun, nper=nper,mc.cores=mc))
+              }
+
 	      for(i in 1:dimX[2])
 	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
+		if(keepPM==TRUE){
+                  PVAL <- resInner[nper*(i-1) + 2*(i) - 1]
+                  STATISTIC[[testRun]][i] <- resInner[nper*(i-1) + 2*i]
+                  nullDistRES[[testRun]][,i] <- resInner[(nper*(i-1) + 2*i + 1):(nper*i + 2*i)]
+                } else {
+		  PVAL <- resInner[2*i-1]
+                  STATISTIC <- resInner[2*i]
+		}
+		obsValue <- STATISTIC
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "two.sided"
 		names(STATISTIC) <- "obs.value"
@@ -136,7 +171,8 @@ kw.gmw <- function(X,g,cluster,goi,type,nper,mc,PARAMETERS,output){
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	     #names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+              names(res)[testRun] <- paste("H1: P_tt' != 0.5 for some t,t'")
 	    }
 	    if(output=="min")
 	    {
@@ -160,7 +196,7 @@ kw.gmw <- function(X,g,cluster,goi,type,nper,mc,PARAMETERS,output){
           } else if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: KW from base system, two sided, X is matrix
-	   innerLoop <- function(i,testRun){
+	   innerLoopEX <- function(i,testRun){
 	     testResult <- kruskal.test(X[is.element(g,goi),i],g[is.element(g,goi)])
              obsValue <- testResult$statistic
              pValue <- testResult$p.value
@@ -170,7 +206,7 @@ kw.gmw <- function(X,g,cluster,goi,type,nper,mc,PARAMETERS,output){
 	    for(testRun in 1:nrow(diffTests))
 	    { 
 	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoopEX,testRun=testRun,mc.cores=mc))
 	      for(i in 1:dimX[2])
 	      {
 		PVAL <- resInner[2*i-1]
@@ -183,7 +219,8 @@ kw.gmw <- function(X,g,cluster,goi,type,nper,mc,PARAMETERS,output){
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+	     #names(res)[testRun] <- paste(diffTests[testRun,],collapse="")
+             names(res)[testRun] <- paste("H1: P_tt' != 0.5 for some t,t'")
 	    }
 	    if(output=="min")
 	    {
@@ -207,5 +244,10 @@ kw.gmw <- function(X,g,cluster,goi,type,nper,mc,PARAMETERS,output){
 	    stop("We do not have this kind of type for the triple test!,O,T,M")
 	  } 
     }
+  if(type=="permutation"){
+    ifelse(keepPM,res <- list(p.values=res, nullDist=nullDistRES, obsValue=obsValue), res <- list(p.values=res))
+  } else {
+    res <- list(p.values=res)
+  }
   res
 }

@@ -1,6 +1,11 @@
-# Version: 30-11-2012, Daniel Fischer
+# Version: 06-07-2013, Daniel Fischer
 
-mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
+# Changes:
+# 28-06-2013: Started with the keepPM implementation
+# 30-06-2013: Finished the keepPM implementation
+# 06-07-2013: Adjusted the output labeling (there was a copy+paste error that all alternatives where H1:P_ij > 0.5)
+
+mw.gmw <- function(X, g, goi, type, nper, alternative, mc, PARAMETERS, output, order, keepPM){
 
  res <- list()
  diffTests <- getComb(goi,"pairs",order=T)
@@ -29,7 +34,7 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 	      obsValue1 <- getP.Cnaive(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]])
 	      obsValue2 <- getP.Cnaive(X[g==diffTests[testRun,2]],X[g==diffTests[testRun,1]])
 	      nullDist <- mwNullDist(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],nper)
-	      PVAL <- 2*min(sum(nullDist>=obsValue1)/nper,sum(nullDist>=obsValue2)/nper)
+	      PVAL <- min(2*min(sum(nullDist>=obsValue1)/nper,sum(nullDist>=obsValue2)/nper),1)
 	      obsValue <- max(obsValue1,obsValue2)
 
 	      names(PVAL) <- "p.value"
@@ -40,7 +45,7 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],sep="")
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],"!=0.5",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -75,7 +80,7 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],sep="")
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],"!=0.5",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -115,7 +120,7 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],sep="")
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],">0.5",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -139,7 +144,7 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: MW from the base system, greater, X is vector
 	    for(testRun in 1:nrow(diffTests))
-	    { # Our greater and base greater are different interpretations, remeber that!!!
+	    { # Our greater and base greater are different interpretations, remember that!!!
 	      testResult <- wilcox.test(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],alt="less")
 	      PVAL <- testResult$p.value
 	
@@ -151,7 +156,7 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],sep="")
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],">0.5",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -190,7 +195,7 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],sep="")
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],"<0.5",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -207,13 +212,13 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, smaller, X is vector
 	    res <- c()
-            stop("We do not have an asymptotic smaller Mann-whiteny test, sorry!!!")
+            stop("We do not have an asymptotic smaller Mann-Whiteny test, sorry!!!")
 	  
 	  } else  if(type=="external"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: MW from the base system, smaller, X is vector
 	    for(testRun in 1:nrow(diffTests))
-	    { # Our greater and base greater are different interpretations, remeber that!!!
+	    { # Our greater and base greater are different interpretations, remember that!!!
 	      testResult <- wilcox.test(X[g==diffTests[testRun,1]],X[g==diffTests[testRun,2]],alt="greater")
 	      PVAL <- testResult$p.value
 	
@@ -225,7 +230,7 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 	      class(resTemp)<-"htest"
 	      
               res[[testRun]] <- resTemp
-	      names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],sep="")
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],"<0.5",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -248,14 +253,15 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 	    res <- c()
 	    stop("There is no other option than small, greater or two-sided...")
        }
+
 ## Case: X is a matrix
-    } else{
+    } else {
 ##----------------------------------------------------------------------------------------------------------------------------------------
 #Preparational things for the case that X is a matrix
     # First, restrict the cores to maximum of possible tests
     if(mc>detectCores()){
 	mc <- detectCores()
-	warning("You do not have so many cores on this machine! I automatically reduced it to your maximum number ",mc)
+	warning("You do not have so many cores on this machine! I automatically reduced it to your maximum number: ",mc)
     }
     mc <- min(dimX[2],mc)
 
@@ -267,26 +273,57 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
              nullDist <- mwNullDist(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],nper)
              obsValue1 <- getP.Cnaive(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i])
 	     obsValue2 <- getP.Cnaive(X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,1],i])
-             pValue <- 2*min(sum(nullDist>=obsValue1)/nper,sum(nullDist>=obsValue2)/nper)
+             pValue <- min(2*min(sum(nullDist>=obsValue1)/nper,sum(nullDist>=obsValue2)/nper),1)
 	     return(list(pValue=pValue,obsValue=max(obsValue1,obsValue2)))
             }
+
+	   innerLoopPM <- function(i,testRun){
+             nullDist <- mwNullDist(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],nper)
+             obsValue1 <- getP.Cnaive(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i])
+	     obsValue2 <- getP.Cnaive(X[g==diffTests[testRun,2],i],X[g==diffTests[testRun,1],i])
+             pValue <- min(2*min(sum(nullDist>=obsValue1)/nper,sum(nullDist>=obsValue2)/nper),1)
+	     return(list(pValue=pValue,obsValue=max(obsValue1,obsValue2), nullDist=nullDist))
+            }
+
+	    if(keepPM){
+	        nullDistRES <- list()
+		STATISTIC <- list()
+		for(i in 1:nrow(diffTests)){
+		  nullDistRES[[i]] <- matrix(0, ncol=dimX[2],nrow=nper)
+		  STATISTIC[[i]] <- c(rep(-1,dimX[2]))
+		}
+	    }
 
 	    for(testRun in 1:nrow(diffTests))
 	    { 
 	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+	    
+              if(keepPM==TRUE){
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoopPM,testRun=testRun,mc.cores=mc))
+              } else {
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+              }
+
 	      for(i in 1:dimX[2])
 	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
+		if(keepPM==TRUE){
+                  PVAL <- resInner[nper*(i-1) + 2*i - 1]
+                  STATISTIC[[testRun]][i] <- resInner[nper*(i-1) + 2*i]
+                  nullDistRES[[testRun]][,i] <- resInner[(nper*(i-1) + 2*i + 1):(nper*i + 2*i)]
+                } else {
+		  PVAL <- resInner[2*i-1]
+                  STATISTIC <- resInner[2*i]
+		}
+
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "greater"
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
 	      }
+	     obsValue <- STATISTIC
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],sep="")
+	     names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],"!=0.5",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -335,7 +372,7 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],sep="")
+	     names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],"!=0.5",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -369,23 +406,51 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
              pValue <- sum(nullDist>=obsValue)/nper
 	     return(list(pValue=pValue,obsValue=obsValue))
             }
+	  # An inner loop that also reports the permutation matrix (I took two different function for speed reasons)
+	   innerLoopPM <- function(i,testRun){
+             nullDist <- mwNullDist(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],nper)
+             obsValue <- getP.Cnaive(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i])
+             pValue <- sum(nullDist>=obsValue)/nper
+	     return(list(pValue=pValue,obsValue=obsValue, nulldist=as.vector(nullDist)))
+            }
+
+
+	    if(keepPM){
+	        nullDistRES <- list()
+		STATISTIC <- list()
+		for(i in 1:nrow(diffTests)){
+		  nullDistRES[[i]] <- matrix(0, ncol=dimX[2],nrow=nper)
+		  STATISTIC[[i]] <- c(rep(-1,dimX[2]))
+		}
+	    }
 
 	    for(testRun in 1:nrow(diffTests))
 	    { 
 	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+	      if(keepPM==TRUE){
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoopPM,testRun=testRun,mc.cores=mc))
+              } else {
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+              }
 	      for(i in 1:dimX[2])
 	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
+		if(keepPM==TRUE){
+                  PVAL <- resInner[nper*(i-1) + 2*i - 1]
+                  STATISTIC[[testRun]][i] <- resInner[nper*(i-1) + 2*i]
+                  nullDistRES[[testRun]][,i] <- resInner[(nper*(i-1) + 2*i + 1):(nper*i + 2*i)]
+                } else {
+		  PVAL <- resInner[2*i-1]
+                  STATISTIC <- resInner[2*i]
+		}
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "greater"
 		names(STATISTIC) <- "obs.value"
 		resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
 		class(resTemp[[i]])<-"htest"	    
 	      }
+	     obsValue <- STATISTIC
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],sep="")
+	     names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],">0.5",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -432,7 +497,7 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],sep="")
+	     names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],">0.5",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -465,15 +530,45 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
              pValue <- sum(nullDist<obsValue)/nper
 	     return(list(pValue=pValue,obsValue=obsValue))
             }
+	   innerLoopPM <- function(i,testRun){
+             nullDist <- mwNullDist(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i],nper)
+             obsValue <- getP.Cnaive(X[g==diffTests[testRun,1],i],X[g==diffTests[testRun,2],i])
+             pValue <- sum(nullDist<obsValue)/nper
+	     return(list(pValue=pValue,obsValue=obsValue, nullDist=nullDist))
+            }
+
+	    if(keepPM){
+	        nullDistRES <- list()
+		STATISTIC <- list()
+		for(i in 1:nrow(diffTests)){
+		  nullDistRES[[i]] <- matrix(0, ncol=dimX[2],nrow=nper)
+		  STATISTIC[[i]] <- c(rep(-1,dimX[2]))
+		}
+	    }
 
 	    for(testRun in 1:nrow(diffTests))
 	    { 
 	      resTemp <- list()
-	      resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+
+	      if(keepPM==TRUE){
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoopPM,testRun=testRun,mc.cores=mc))
+		#nullDistRES <- matrix(0, ncol=dimX[2],nrow=nper)
+              } else {
+   	        resInner <-  unlist(mclapply(c(1:dimX[2]),innerLoop,testRun=testRun,mc.cores=mc))
+              }
+
 	      for(i in 1:dimX[2])
 	      {
-		PVAL <- resInner[2*i-1]
-		STATISTIC <- resInner[2*i]
+
+		if(keepPM==TRUE){
+                  PVAL <- resInner[nper*(i-1) + 2*(i) - 1]
+                  STATISTIC[[testRun]][i] <- resInner[nper*(i-1) + 2*i]
+                  nullDistRES[[testRun]][,i] <- resInner[(nper*(i-1) + 2*i + 1):(nper*i + 2*i)]
+                } else {
+		  PVAL <- resInner[2*i-1]
+                  STATISTIC <- resInner[2*i]
+		}
+		obsValue <- STATISTIC
 		names(PVAL) <- "p.value"
 		ALTERNATIVE <- "smaller"
 		names(STATISTIC) <- "obs.value"
@@ -481,7 +576,7 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],sep="")
+	     names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],"<0.5",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -528,7 +623,7 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 		class(resTemp[[i]])<-"htest"	    
 	      }
 	     res[[testRun]] <- resTemp
-	     names(res)[testRun] <- paste("P",diffTests[testRun,1],diffTests[testRun,2],sep="")
+	     names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],"<0.5",sep="")
 	    }
 	    if(output=="min")
 	    {
@@ -557,6 +652,11 @@ mw.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,order){
 	    res <- c()
 	    stop("There are no other alternatives possible, sorry! All other....")
      }
+  }
+  if(type=="permutation"){
+    ifelse(keepPM,res <- list(p.values=res, nullDist=nullDistRES, obsValue=obsValue), res <- list(p.values=res))
+  } else {
+    res <- list(p.values=res)
   }
   res
 }

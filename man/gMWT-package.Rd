@@ -11,21 +11,22 @@
 The package provides nonparametric tools for the comparison of several groups/treatments when 
 the number of variables is large. The tools are the following.
 
-(i) Computation of the so called probabilistic index (PI) estimates for the group comparisons.
-The probabilistic indices here are (a) the probability \eqn{P_t} that a random observation from group \eqn{t}
-is smaller that a random observation from other groups, (b) the probability \eqn{P_{tt'}} that 
+(i) Computation of the so-called probabilistic index (PI) estimates for the group comparisons.
+The probabilistic indices here are (a) the probability \eqn{\hat P_t} that a random observation from group \eqn{t}
+is smaller than a random observation from other groups, (b) the probability \eqn{\hat P_{tt'}} that 
 a random observation from group \eqn{t} is smaller than a random observation from group \eqn{t'},
-and (c) the probability \eqn{P_{tt't''}} that random observations from groups \eqn{t,t',t''} 
+and (c) the probability \eqn{\hat P_{tt't''}} that random observations from groups \eqn{t,t',t''} 
 appear in this same order. The tools are also given to produce the plots of PIs for set of variables.
 
 (ii) Computation of the p-values of some classical  and some new nonparametric tests for the comparison of
 several groups/treatments.  The tests are based on the use of the  probabilistic 
-indices (PI) \eqn{P_t}, \eqn{P_{tt'}} and \eqn{P_{tt't''}}. Classical Wilcoxon test, Mann-Whitney test and 
-Jonkheere-Terpstra tests are included.
+indices (PI) \eqn{\hat P_t}, \eqn{\hat P_{tt'}} and \eqn{\hat P_{tt't''}}. Classical Wilcoxon-Mann-Whitney test, 
+Kruskal-Wallis and Jonckheere-Terpstra tests are included.
 
 (iii) Tools for the simultaneous testing problem. As the package is meant for the analysis of gene expression data, 
 for example, the plots of the numbers of observed and expected rejected null hypotheses and their ratio as
-a function of alpha are provided. 
+a function of alpha are provided. Different multiple testing adjustment methods are implemented, i.a. Bonferroni,
+Bejamini & Hochberg and Westfall & Young.  
 }
 
 
@@ -34,8 +35,8 @@ a function of alpha are provided.
   \tabular{ll}{
     Package: \tab GMW\cr
     Type: \tab Package\cr
-    Version: \tab 0.2.1\cr
-    Date: \tab 2012-12-20\cr
+    Version: \tab 0.3\cr
+    Date: \tab 2013-09-19\cr
     License: \tab GPL\cr
     LazyLoad: \tab yes\cr
   }
@@ -48,9 +49,9 @@ a function of alpha are provided.
 }
 
 \references{
-  Fischer, D., Oja, H., Sen, P.K., Schleutker, J., Wahlfors, T. (2012): Generalized Mann-Whitney Type Tests for Microarray Experiments, submitted article.
+  Fischer, D., Oja, H., Schleutker, J., Sen, P.K., Wahlfors, T. (2013): Generalized Mann-Whitney Type Tests for Microarray Experiments, Scandinavian Journal of Statistic, to appear.
 
-  Fischer, D., Oja, H. (2012): A permutation type test for calculating generalized Mann-Whitney tests, manuscript.
+  Fischer, D., Oja, H. (2013): Mann-Whitney Type Tests for Microarray Experiments: The R Package gMWT, submitted article.
 }
 
 \keyword{package}

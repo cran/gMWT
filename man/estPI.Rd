@@ -6,11 +6,11 @@
 }
 
 \description{
-  This function calculates the probabilistic indices \eqn{P_t} , \eqn{P_{tt'}} and \eqn{P_{tt't''}} 
+  This function calculates the probabilistic indices \eqn{\hat{P}_t} , \eqn{\hat{P}_{tt'}} and \eqn{\hat{P}_{tt't''}} 
   to compare the groups of observations.
 }
 \usage{
-  estPI(X,g,type="pair",goi=NULL,mc=1,order=TRUE,alg="Cnaive")
+  estPI(X, g, type="pair", goi=NULL, mc=1, order=TRUE, alg="Cnaive")
 }
 
 \arguments{
@@ -32,22 +32,23 @@
   In that case those group labels can be specified with the \code{goi} option by giving the corresponding
   group labels. 
 
-  Different types of PI can be calculated: \code{"single"} calculates the probability \eqn{P_t} for each group,
-  \code{"pair"} produces the probabilistic indices \eqn{P_{tt'}} for all pairs of groups \eqn{t<t'}, and
-  \code{"triple"} provides the probabilities \eqn{P_{tt't''}} for all triples of groups \eqn{t<t'<t''}.
-  See Fischer et al. (2012) for more details.
+  Different types of PI can be calculated: \code{"single"} calculates the probability \eqn{\hat{P}_t} for each group,
+  \code{"pair"} produces the probabilistic indices \eqn{\hat{P}_{tt'}} for all pairs of groups \eqn{t<t'}, and
+  \code{"triple"} provides the probabilities \eqn{\hat{P}_{tt't''}} for all triples of groups \eqn{t<t'<t''}.
+  See Fischer et al. (2013) for more details.
 
   Note that the PIs are calculated using the group numbering as given in \code{g}. See also the function
   \code{\link[gMWT]{createGroups}} for renumbering the group labels. By specifying the option \code{order=FALSE}
-  the PIs for all possible group orders will be calculated.
+  the PIs for all possible group orders will be calculated. The default is that the PI is only calculated for the
+  natural order given by \code{g}.
 
   In case this code is executed on a Linux machine and \code{X} is a data matrix, the calculation can be parallelized
   using the option \code{mc} to specify the amount of used calculation cores. 
 
   Different algorithms are available for the  calculation of the PIs. The default is the fastest
-  possible option and the user should not change the option. Different algorithms are only provided for validation and testing
-  purposes. Options here are currently \code{Cnaive}, \code{Rnaive}, \code{Rgrid}, \code{Rsub}, but not all combinations of \code{type}/\code{alg}
-  are available.
+  possible option and the user should not change this option. Different algorithms are only provided for validation and testing
+  purposes. Options here are currently \code{Cnaive}, \code{Rnaive}, \code{Rgrid}, \code{Rsub}, \code{Csub} but not all combinations
+  of \code{type}/\code{alg} are available.
 }
 \value{
   A list with class 'estPI' containing the following components:
@@ -61,9 +62,9 @@
 }
 
 \references{
-  Fischer, D., Oja, H., Sen, P.K., Schleutker, J., Wahlfors, T. (2012): Generalized Mann-Whitney Type Tests for Microarray Experiments, submitted article.\cr
+  Fischer, D., Oja, H., Schleutker, Sen, P.K., J., Wahlfors, T. (2013): Generalized Mann-Whitney Type Tests for Microarray Experiments, Scandinavian Journal of Statistics, to appear.\cr
 
-  Fischer, D., Oja, H. (2012): A permutation type test for calculating generalized Mann-Whitney tests, manuscript.
+  Fischer, D., Oja, H. (2013): Mann-Whitney Type Tests for Microarray Experiments: The R Package gMWT, submitted article.
 }
 
 \author{
