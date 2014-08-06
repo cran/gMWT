@@ -1,5 +1,9 @@
 LOG of the CHANGES in the package gMWT
 
+Version 0.9:
+* Fixed a problem with the mwAkw option in gmw in case that kw reports NA p-values
+* Pre-stable release version.
+
 Version 0.3:
 * Extended 'createGroups' to accept also characters as input
 * Added classical multiple testings corrections to the function 'getSigTests'

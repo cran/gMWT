@@ -83,7 +83,7 @@ gmw <- function(X, g, goi=NULL, test="mw", type="permutation", prob="pair", nper
       res <- mw.gmw(X=X,g=g,goi=goi,type=type,nper=nper,alternative="two.sided",mc=mc,PARAMETERS,output=output,order=TRUE, keepPM=keepPM)
       res$p.values <- rbind(resKW$p.values,res$p.values)
       temp <- rownames(res$p.values)
-      res$p.values <- res$p.values[,res$p.values[1,]<=mwAkw]
+      res$p.values <- res$p.values[,which((res$p.values[1,]<=mwAkw)==TRUE)]
       rownames(res$p.values) <- temp
     } else if(mwAkw==FALSE){
     res <- kw.gmw(X,g,cluster,goi,type,nper,mc,PARAMETERS,output, keepPM=keepPM)

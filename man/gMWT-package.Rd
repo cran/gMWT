@@ -35,8 +35,8 @@ Bejamini & Hochberg and Westfall & Young.
   \tabular{ll}{
     Package: \tab GMW\cr
     Type: \tab Package\cr
-    Version: \tab 0.3\cr
-    Date: \tab 2013-09-19\cr
+    Version: \tab 0.9\cr
+    Date: \tab 2014-08-06\cr
     License: \tab GPL\cr
     LazyLoad: \tab yes\cr
   }
@@ -49,7 +49,7 @@ Bejamini & Hochberg and Westfall & Young.
 }
 
 \references{
-  Fischer, D., Oja, H., Schleutker, J., Sen, P.K., Wahlfors, T. (2013): Generalized Mann-Whitney Type Tests for Microarray Experiments, Scandinavian Journal of Statistic, to appear.
+  Fischer, D., Oja, H., Schleutker, J., Sen, P.K., Wahlfors, T. (2013): Generalized Mann-Whitney Type Tests for Microarray Experiments, Scandinavian Journal of Statistic. doi: 10.1111/sjos.12055.
 
   Fischer, D., Oja, H. (2013): Mann-Whitney Type Tests for Microarray Experiments: The R Package gMWT, submitted article.
 }
