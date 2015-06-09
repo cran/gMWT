@@ -94,7 +94,7 @@
 \references{
   Fischer, D., Oja, H., Schleutker, J., Sen, P.K., Wahlfors, T. (2013): Generalized Mann-Whitney Type Tests for Microarray Experiments, Scandinavian Journal of Statistic, doi: 10.1111/sjos.12055.\cr
 
-  Fischer, D., Oja, H. (2013): Mann-Whitney Type Tests for Microarray Experiments: The R Package gMWT, submitted article.
+  Daniel Fischer, Hannu Oja (2015). Mann-Whitney Type Tests for Microarray Experiments: The R Package gMWT. Journal of Statistical Software, 65(9), 1-19. URL http://www.jstatsoft.org/v65/i01/.
 
   Westfall, P.H. and Young, S.S. (1993): Resampling-Based Multiple Testing: Examples and Methods for p-Value Adjustment. Wiley, New York.
 }

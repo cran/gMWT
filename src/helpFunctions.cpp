@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath> 
 #include <R.h>
+#include <Rmath.h>
 //#include <stl>
 
 /* This is quite ugly code, but it still speeds up the calculation
@@ -12,6 +13,7 @@ using namespace std;
 
 extern "C" {
 
+ 
     double getP(double *x, double *y, int *nx, int *ny){
     int NX = nx[0];
     int NY = ny[0];
@@ -293,7 +295,7 @@ extern "C" {
   // ADD HERE STILL THE OPTION FOR A SEED!!!!
   // CHECK IF THE MEMORY IS FREED!!!
   double *permObs(double *x, double *y, double *z,int *nx, int *ny, int *nz){
-
+  
       int i;
       int N = nx[0] + ny[0] + nz[0];
   
@@ -304,13 +306,19 @@ extern "C" {
       for(i=0;i<ny[0];i++) joined[i+nx[0]] = y[i];
       for(i=0;i<nz[0];i++) joined[i+nx[0]+ny[0]] = z[i];
   
+      GetRNGstate();
+      
       // Shuffle the joined array:
       for (int i=0; i<(N-1); i++) {
-         int r = i + (rand() % (N-i)); // Random remaining position.
+         double rv = unif_rand();
+	 int r = i + floor(rv * (N-i));
+         //int r = i + (rand() % (N-i)); // Random remaining position.
          double temp = joined[i]; 
 	 joined[i] = joined[r];
 	 joined[r] = temp;
         }
+
+      PutRNGstate();
       
       return(joined);
   }
@@ -331,14 +339,19 @@ extern "C" {
   
       double temp;
       
+      GetRNGstate();
+
       // Shuffle the joined array:
       for (int i=0; i<(N-1); i++) {
-         int r = i + (rand() % (N-i)); // Random remaining position.
+	double rv = unif_rand();
+         int r = i + floor(rv * (N-i));
+         //int r = i + (rand() % (N-i)); // Random remaining position.
          temp = joined[i]; 
 	 joined[i] = joined[r];
 	 joined[r] = temp;
         }
-      
+        
+      PutRNGstate();      
      for(i=0;i<N;i++) result[i] = joined[i];
   }
   
@@ -356,14 +369,17 @@ extern "C" {
   
       double temp;
       
+      GetRNGstate();
       // Shuffle the joined array:
       for (int i=0; i<(N-1); i++) {
-         int r = i + (rand() % (N-i)); // Random remaining position.
+	 double rv = unif_rand();
+	 int r = i + floor(rv * (N-i));
+         // int r = i + (rand() % (N-i)); // Random remaining position.
          temp = joined[i]; 
 	 joined[i] = joined[r];
 	 joined[r] = temp;
         }
-      
+     PutRNGstate();     
      for(i=0;i<N;i++) result[i] = joined[i];
   }
   

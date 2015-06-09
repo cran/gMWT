@@ -1,5 +1,13 @@
 LOG of the CHANGES in the package gMWT
 
+Version 1.0:
+* Switched from C to R RNG
+* Stable release version
+* Added package reference paper
+
+Version 0.9.1:
+* Changed maintainer email address
+
 Version 0.9:
 * Fixed a problem with the mwAkw option in gmw in case that kw reports NA p-values
 * Pre-stable release version.
