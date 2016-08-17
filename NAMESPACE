@@ -1,5 +1,9 @@
 import(parallel, clinfun, Rcpp)
 
+importFrom("graphics", "axis", "layout", "legend", "lines", "mtext",
+           "par", "plot", "points")
+importFrom("stats", "kruskal.test", "pchisq", "pnorm", "wilcox.test")
+
 export(estPI,plotPI,gmw,rejectionPlot,createGroups,getSigTests)
 
 S3method(print,estPI)

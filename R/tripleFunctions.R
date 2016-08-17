@@ -1,5 +1,3 @@
-# Version: 30-11-2012, Daniel Fischer
-
 # This function calculates the test statistic for the triple type of our tests
 # The outcommented lines are useful for the case, that we allow a general alternative
 # formulated with a vector a. But here it only consumes calculation time...
@@ -15,7 +13,7 @@ getP.Rsub <- function(x=NULL,y=NULL,z=NULL,ST=NULL,EQ=NULL,ties=TRUE){
     return(obsCounts/(ST$n1*ST$n2*ST$n3))
 }
 
-# # this function calculates the permutated values
+# This function calculates the permutated values
 perm.triple <- function(x,y,z,nper,algorithm){
   Nx <- length(x)
   Ny <- length(y)
@@ -72,4 +70,28 @@ perm.triple <- function(x,y,z,nper,algorithm){
     stop("We can't do that!!!")
   }
   result
+}
+
+# This function calculates the value of the asymptotic test statistic
+# For details, see D.Fischer: On Statistical Methods in Prostate Cancer Genomics, Chapter 4
+
+  PHatVar.asymp <- function(nx, ny, nz){
+  # Define the required constants
+    zeta.11.100 <- 1/45
+    zeta.11.010 <- 1/180
+    zeta.11.001 <- 1/45
+    zeta.11.110 <- 1/18
+    zeta.11.101 <- 1/18
+    zeta.11.011 <- 1/18
+    zeta.11.111 <- 5/36
+
+  # And then feed the values into the general formula:
+    res <- 1/(nx*ny*nz) * ((ny-1)*(nz-1)*zeta.11.100
+                          + (nx-1)*(nz-1)*zeta.11.010
+                          + (nx-1)*(ny-1)*zeta.11.001
+                          + (nz-1)*zeta.11.110
+                          + (ny-1)*zeta.11.101
+                          + (nx-1)*zeta.11.011
+                          + zeta.11.111)
+  res
 }

@@ -1,5 +1,0 @@
-- Add Westfall & Young procedure. For that, introduce the option "keepPM" to the test function in order to
-    keep the permutation values. Based on those we can calculate then then W&Y correction. In that case we
-    have to seed the permutations for each variable run, so that it has the same order between the runs!
-
-- Add the references to the getSigTests reference site

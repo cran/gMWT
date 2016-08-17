@@ -57,10 +57,44 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg, k
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, two sided, X is vector
+	    for(testRun in 1:nrow(diffTests)){
+  	    nx <- length(X[g==diffTests[testRun,1]])
+  	    ny <- length(X[g==diffTests[testRun,2]])
+  	    nz <- length(X[g==diffTests[testRun,3]])
+  	    obsValue1 <- (as.vector(estPI(X=c(X[g==diffTests[testRun,1]], X[g==diffTests[testRun,2]], X[g==diffTests[testRun,3]]),
+  	                                  g=c(rep(1,nx), rep(2,ny), rep(3,nz)),
+  	                                  type="triple")$probs)-1/6)/sqrt(PHatVar.asymp(nx,ny,nz))
+  	    obsValue2 <- (as.vector(estPI(X=c(X[g==diffTests[testRun,3]], X[g==diffTests[testRun,2]], X[g==diffTests[testRun,1]]),
+  	                                  g=c(rep(1,nz), rep(2,ny), rep(3,nx)),
+  	                                  type="triple")$probs)-1/6)/sqrt(PHatVar.asymp(nz,ny,nx))
 
-	    res <- c()
-            stop("We do not have a asymptotic two-sided version for the triple test, sorry!!!")
-          } else {
+	    p1 <- 1-pnorm(obsValue1)
+	    p2 <- 1-pnorm(obsValue2)
+	    
+	    PVAL <- 2*min(p1,p2)
+	    	    
+	    names(PVAL) <- "p.value"
+	    STATISTIC <- max(obsValue1,obsValue2)
+	    names(STATISTIC) <- "obs.value"
+	    ALTERNATIVE <- "two.sided"
+	    resTemp<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
+	    class(resTemp)<-"htest"
+	    
+	    res[[testRun]] <- resTemp
+	    names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6 or P",diffTests[testRun,3],diffTests[testRun,2],diffTests[testRun,1]," > 1/6",sep="")
+	    } 	   
+	    if(output=="min"){
+	      resMin <- matrix(NA,ncol=1,nrow=length(res))
+	      colnames(resMin) <- "pValues"
+	      rownames(resMin) <- names(res)
+	      for(i in 1:length(res))
+	      {
+	        resMin[i,1] <- res[[i]]$p.value
+	      }
+	      res <- resMin
+	    }
+	    
+	  } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, two sided, X is vector
 	    res <- c()
@@ -102,8 +136,38 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg, k
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is vector
-	    res <- c()
-            stop("We do not have a asymptotic greater version for the triple test, sorry!!!")
+	    for(testRun in 1:nrow(diffTests)){
+	      nx <- length(X[g==diffTests[testRun,1]])
+	      ny <- length(X[g==diffTests[testRun,2]])
+	      nz <- length(X[g==diffTests[testRun,3]])
+	      obsValue1 <- (as.vector(estPI(X=c(X[g==diffTests[testRun,1]], X[g==diffTests[testRun,2]], X[g==diffTests[testRun,3]]),
+	                                    g=c(rep(1,nx), rep(2,ny), rep(3,nz)),
+	                                    type="triple")$probs)-1/6)/sqrt(PHatVar.asymp(nx,ny,nz))
+	      
+	      p1 <- 1-pnorm(obsValue1)
+	      
+	      PVAL <- p1
+	      
+	      names(PVAL) <- "p.value"
+	      STATISTIC <- obsValue1
+	      names(STATISTIC) <- "obs.value"
+	      ALTERNATIVE <- "greater"
+	      resTemp<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
+	      class(resTemp)<-"htest"
+	      
+	      res[[testRun]] <- resTemp
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6",sep="")
+	    } 	   
+	    if(output=="min"){
+	      resMin <- matrix(NA,ncol=1,nrow=length(res))
+	      colnames(resMin) <- "pValues"
+	      rownames(resMin) <- names(res)
+	      for(i in 1:length(res))
+	      {
+	        resMin[i,1] <- res[[i]]$p.value
+	      }
+	      res <- resMin
+	    }
           } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, greater, X is vector
@@ -145,9 +209,39 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg, k
 
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
-# Case: asymptotic, greater, X is vector
-	    res <- c()
-            stop("We do not have a two-sided version for the triple test, sorry!!!")
+# Case: asymptotic, smaller, X is vector
+	    for(testRun in 1:nrow(diffTests)){
+	      nx <- length(X[g==diffTests[testRun,1]])
+	      ny <- length(X[g==diffTests[testRun,2]])
+	      nz <- length(X[g==diffTests[testRun,3]])
+	      obsValue1 <- (as.vector(estPI(X=c(X[g==diffTests[testRun,1]], X[g==diffTests[testRun,2]], X[g==diffTests[testRun,3]]),
+	                                    g=c(rep(1,nx), rep(2,ny), rep(3,nz)),
+	                                    type="triple")$probs)-1/6)/sqrt(PHatVar.asymp(nx,ny,nz))
+	      
+	      p1 <- pnorm(obsValue1)
+	      
+	      PVAL <- p1
+	      
+	      names(PVAL) <- "p.value"
+	      STATISTIC <- obsValue1
+	      names(STATISTIC) <- "obs.value"
+	      ALTERNATIVE <- "greater"
+	      resTemp<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
+	      class(resTemp)<-"htest"
+	      
+	      res[[testRun]] <- resTemp
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," < 1/6",sep="")
+	    } 	   
+	    if(output=="min"){
+	      resMin <- matrix(NA,ncol=1,nrow=length(res))
+	      colnames(resMin) <- "pValues"
+	      rownames(resMin) <- names(res)
+	      for(i in 1:length(res))
+	      {
+	        resMin[i,1] <- res[[i]]$p.value
+	      }
+	      res <- resMin
+	    }
           } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, one sided, X is vector
@@ -246,8 +340,61 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg, k
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, two sided, X is matrix
-	    res <- c()
-	    stop("We do not have a two-sided version for the triple test, sorry!!!,A,T,M")
+	   innerLoop <- function(i,testRun){
+	     
+	      nx <- length(X[g==diffTests[testRun,1],i])
+	      ny <- length(X[g==diffTests[testRun,2],i])
+	      nz <- length(X[g==diffTests[testRun,3],i])
+	      
+	      obsValue1 <- (as.vector(estPI(X=c(X[g==diffTests[testRun,1],i], X[g==diffTests[testRun,2],i], X[g==diffTests[testRun,3],i]),
+	                                    g=c(rep(1,nx), rep(2,ny), rep(3,nz)),
+	                                    type="triple")$probs)-1/6)/sqrt(PHatVar.asymp(nx,ny,nz))
+	      obsValue2 <- (as.vector(estPI(X=c(X[g==diffTests[testRun,3],i], X[g==diffTests[testRun,2],i], X[g==diffTests[testRun,1],i]),
+	                                    g=c(rep(1,nz), rep(2,ny), rep(3,nx)),
+	                                    type="triple")$probs)-1/6)/sqrt(PHatVar.asymp(nz,ny,nx))
+
+	      p1 <- 1-pnorm(obsValue1)
+	      p2 <- 1-pnorm(obsValue2)
+	      
+	      pValue <- min(p1,p2)
+	      
+	      return(list(pValue=pValue,obsValue=max(obsValue1,obsValue2)))
+	    }
+	    
+	    for(testRun in 1:nrow(diffTests))
+	    { 
+	      resTemp <- list()
+
+	      resInner <- unlist(mclapply(c(1:dimX[2]),innerLoop,testRun,mc.cores=mc))
+	      
+	      for(i in 1:dimX[2])
+	      {
+	        PVAL <- resInner[2*i-1]
+	        STATISTIC <- resInner[2*i]
+	        obsValue <- STATISTIC
+	        names(PVAL) <- "p.value"
+	        ALTERNATIVE <- "two.sided"
+	        names(STATISTIC) <- "obs.value"
+	        resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
+	        class(resTemp[[i]])<-"htest"	    
+	      }
+	      res[[testRun]] <- resTemp
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6 or P",diffTests[testRun,3],diffTests[testRun,2],diffTests[testRun,1]," > 1/6",sep="")
+	    }
+	    if(output=="min")
+	    {
+	      resMin <- matrix(NA,ncol=dimX[2],nrow=length(res))
+	      colnames(resMin) <- colnames(X)
+	      rownames(resMin) <- names(res)
+	      for(i in 1:length(res))
+	      {
+	        for(j in 1:dimX[2])
+	        {
+	          resMin[i,j] <- res[[i]][[j]]$p.value
+	        }
+	      }
+	      res <- resMin
+	    }
           } else {
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: other options, two sided, X is vector
@@ -331,8 +478,55 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg, k
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, greater, X is matrix
-	    res <- c()
-            stop("We do not have a two-sided version for the triple test, sorry!!!A,2S,V")
+	    innerLoop <- function(i,testRun){
+	      
+	      nx <- length(X[g==diffTests[testRun,1],i])
+	      ny <- length(X[g==diffTests[testRun,2],i])
+	      nz <- length(X[g==diffTests[testRun,3],i])
+	      
+	      obsValue1 <- (as.vector(estPI(X=c(X[g==diffTests[testRun,1],i], X[g==diffTests[testRun,2],i], X[g==diffTests[testRun,3],i]),
+	                                    g=c(rep(1,nx), rep(2,ny), rep(3,nz)),
+	                                    type="triple")$probs)-1/6)/sqrt(PHatVar.asymp(nx,ny,nz))
+	      
+	      pValue <- 1-pnorm(obsValue1)
+	     
+	      return(list(pValue=pValue,obsValue=obsValue1))
+	    }
+	    
+	    for(testRun in 1:nrow(diffTests))
+	    { 
+	      resTemp <- list()
+	      
+	      resInner <- unlist(mclapply(c(1:dimX[2]),innerLoop,testRun,mc.cores=mc))
+	      
+	      for(i in 1:dimX[2])
+	      {
+	        PVAL <- resInner[2*i-1]
+	        STATISTIC <- resInner[2*i]
+	        obsValue <- STATISTIC
+	        names(PVAL) <- "p.value"
+	        ALTERNATIVE <- "greater"
+	        names(STATISTIC) <- "obs.value"
+	        resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
+	        class(resTemp[[i]])<-"htest"	    
+	      }
+	      res[[testRun]] <- resTemp
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6",sep="")
+	    }
+	    if(output=="min")
+	    {
+	      resMin <- matrix(NA,ncol=dimX[2],nrow=length(res))
+	      colnames(resMin) <- colnames(X)
+	      rownames(resMin) <- names(res)
+	      for(i in 1:length(res))
+	      {
+	        for(j in 1:dimX[2])
+	        {
+	          resMin[i,j] <- res[[i]][[j]]$p.value
+	        }
+	      }
+	      res <- resMin
+	    }
 	  } else {
 	    res <- c()
 	    stop("We do not have this kind of type for the UIT!,O,G,M")
@@ -413,8 +607,55 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg, k
 	  } else if(type=="asymptotic"){
 #----------------------------------------------------------------------------------------------------------------------------------------
 # Case: asymptotic, smaller, X is matrix
-	    res <- c()
-	    stop("We do not have this kind of type for the triple test!,A,S,M")
+	    innerLoop <- function(i,testRun){
+	      
+	      nx <- length(X[g==diffTests[testRun,1],i])
+	      ny <- length(X[g==diffTests[testRun,2],i])
+	      nz <- length(X[g==diffTests[testRun,3],i])
+	      
+	      obsValue1 <- (as.vector(estPI(X=c(X[g==diffTests[testRun,1],i], X[g==diffTests[testRun,2],i], X[g==diffTests[testRun,3],i]),
+	                                    g=c(rep(1,nx), rep(2,ny), rep(3,nz)),
+	                                    type="triple")$probs)-1/6)/sqrt(PHatVar.asymp(nx,ny,nz))
+	      
+	      pValue <- pnorm(obsValue1)
+	      
+	      return(list(pValue=pValue,obsValue=obsValue1))
+	    }
+	    
+	    for(testRun in 1:nrow(diffTests))
+	    { 
+	      resTemp <- list()
+	      
+	      resInner <- unlist(mclapply(c(1:dimX[2]),innerLoop,testRun,mc.cores=mc))
+	      
+	      for(i in 1:dimX[2])
+	      {
+	        PVAL <- resInner[2*i-1]
+	        STATISTIC <- resInner[2*i]
+	        obsValue <- STATISTIC
+	        names(PVAL) <- "p.value"
+	        ALTERNATIVE <- "smaller"
+	        names(STATISTIC) <- "obs.value"
+	        resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
+	        class(resTemp[[i]])<-"htest"	    
+	      }
+	      res[[testRun]] <- resTemp
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," < 1/6",sep="")
+	    }
+	    if(output=="min")
+	    {
+	      resMin <- matrix(NA,ncol=dimX[2],nrow=length(res))
+	      colnames(resMin) <- colnames(X)
+	      rownames(resMin) <- names(res)
+	      for(i in 1:length(res))
+	      {
+	        for(j in 1:dimX[2])
+	        {
+	          resMin[i,j] <- res[[i]][[j]]$p.value
+	        }
+	      }
+	      res <- resMin
+	    }
           } else {
 	    res <- c()
 	    stop("We do not have this kind of type for the triple test!,O,S,M")
