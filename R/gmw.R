@@ -9,7 +9,7 @@ gmw <- function(X, g, goi=NULL, test="mw", type="permutation", prob="pair", nper
 
 # Input checks
  if(is.null(alg)) alg <- "Cnaive"
- type <- match.arg(type,c("permutation","external","asymptotic"))
+ type <- match.arg(type,c("permutation","external","asymptotic", "asymptotic2"))
  test <- match.arg(test,c("uit","triple","jt","jt*","mw","kw"))
  prob <- match.arg(prob,c("single","pair","triple"))
  alg <- match.arg(alg,c("Cnaive","Rnaive","Csubmat","Rsubmat"))

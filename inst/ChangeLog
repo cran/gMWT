@@ -1,5 +1,8 @@
 LOG of the CHANGES in the package gMWT
 
+Version 1.1.x:
+1: Fixed cran errors concerning that class vectors cannot be assumed to be of length 1
+
 Version 1.1:
 * Added the asymptotical test option for the triple test
 

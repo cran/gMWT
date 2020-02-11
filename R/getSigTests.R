@@ -167,7 +167,7 @@ getSigTests <- function(pvalues, alpha=0.05, method="plain"){
 
 # In case that we give a matrix of p-values, run this function for each row and create a capsulated list
   if(method=="maxT"){
-    if(class(pvalues)!="gmw") stop ("The pvalues object has to be of class gmw, please put here the outpt of the function gmw.")
+    if(!is.element("gmw",class(pvalues))) stop ("The pvalues object has to be of class gmw, please put here the outpt of the function gmw.")
     if(attr(pvalues,"keepPM")!=TRUE) stop ("For the Westfall & Young approach the permutation matrix has to be available, please choose the option 'keepPM=TRUE' in the gmw call.")
     alternative <- attr(pvalues,"alternative")
 
@@ -185,7 +185,7 @@ getSigTests <- function(pvalues, alpha=0.05, method="plain"){
       result$inputN <- 1
     }
   } else {
-    if(class(pvalues)!="gmw"){
+    if(!is.element("gmw",class(pvalues))){
       temp <- pvalues
       pvalues <- list()
       pvalues$p.values <- temp

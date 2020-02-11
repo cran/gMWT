@@ -527,6 +527,62 @@ triple.gmw <- function(X,g,goi,type,nper,alternative,mc,PARAMETERS,output,alg, k
 	      }
 	      res <- resMin
 	    }
+	  } else if(type=="asymptotic2"){
+	    #----------------------------------------------------------------------------------------------------------------------------------------
+	    # Case: asymptotic, greater, X is matrix
+	    innerLoop <- function(i,testRun){
+	      
+	      
+	      obsValue1 <- (as.vector(estPI(X=c(X[g==diffTests[testRun,1],i], X[g==diffTests[testRun,2],i], X[g==diffTests[testRun,3],i]),
+	                                    g=c(rep(1,nx), rep(2,ny), rep(3,nz)),
+	                                    type="triple")$probs)-1/6)/sqrt(PHatVar.asymp(nx,ny,nz))
+	      
+	      pValue <- 1-pnorm(obsValue1)
+	      
+	      return(list(pValue=pValue,obsValue=obsValue1))
+	    }
+	    
+	    for(testRun in 1:nrow(diffTests))
+	    { 
+	      resTemp <- list()
+	      nx <- sum(g==diffTests[testRun,1])
+	      ny <- sum(g==diffTests[testRun,2])
+	      nz <- sum(g==diffTests[testRun,3])
+	      
+	      obsValue1 <- (as.vector(estPI(X=X, g=g, type="triple")$probs)-1/6)/sqrt(PHatVar.asymp(nx,ny,nz))
+	      
+	      pValue <- 1-pnorm(obsValue1)
+	      
+	      resInner <- c(rbind(pValue, obsValue1))	      
+
+	      for(i in 1:dimX[2])
+	      {
+	        PVAL <- resInner[2*i-1]
+	        STATISTIC <- resInner[2*i]
+	        obsValue <- STATISTIC
+	        names(PVAL) <- "p.value"
+	        ALTERNATIVE <- "greater"
+	        names(STATISTIC) <- "obs.value"
+	        resTemp[[i]]<-c(list(method=METHOD,data.name=DNAME,alternative=ALTERNATIVE,statistic=STATISTIC,test=TEST,p.value=PVAL,type=TYPE))
+	        class(resTemp[[i]])<-"htest"	    
+	      }
+	      res[[testRun]] <- resTemp
+	      names(res)[testRun] <- paste("H1: P",diffTests[testRun,1],diffTests[testRun,2],diffTests[testRun,3]," > 1/6",sep="")
+	    }
+	    if(output=="min")
+	    {
+	      resMin <- matrix(NA,ncol=dimX[2],nrow=length(res))
+	      colnames(resMin) <- colnames(X)
+	      rownames(resMin) <- names(res)
+	      for(i in 1:length(res))
+	      {
+	        for(j in 1:dimX[2])
+	        {
+	          resMin[i,j] <- res[[i]][[j]]$p.value
+	        }
+	      }
+	      res <- resMin
+	    }
 	  } else {
 	    res <- c()
 	    stop("We do not have this kind of type for the UIT!,O,G,M")
