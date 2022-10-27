@@ -10,11 +10,11 @@
 # the different approaches as well as compare different implementation with respect to calculation
 # time.
 
-  estPI <- function(X,g,type="pair",goi=NULL,mc=1,order=TRUE,alg="Cnaive"){
+  estPI <- function(X, g, type="pair", goi=NULL, mc=1, order=TRUE, alg="Cnaive"){
   
   # Input checks
-    type <- match.arg(type,c("single","pair","triple"))
-    alg <- match.arg(alg,c("Cnaive","Csubmat","Rsubmat","Rnaive","Rgrid"))
+    type <- match.arg(type, c("single", "pair", "triple"))
+    alg <- match.arg(alg, c("Cnaive", "Csubmat", "Rsubmat", "Rnaive", "Rgrid"))
     g <- relabelGroups(g)
 
   # Define the output object
@@ -36,9 +36,9 @@
     if(mc>detectCores())
     {
       mc <- detectCores()
-      warning(paste("You do not have so many cores on this machine! I automatically reduced it to your machines maximum number:",mc,"\n"))
+      warning(paste("You do not have so many cores on this machine! I automatically reduced it to your machines maximum number:", mc, "\n"))
     }
-    mc <- min(dimX[2],mc)
+    mc <- min(dimX[2], mc)
 
   # Check first, how many probabilistic indices are requested (depending on input type, goi and order)
     NlistItems <- c()

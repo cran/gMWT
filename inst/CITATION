@@ -9,12 +9,12 @@ citEntry(entry = "Article",
   volume       = "65",
   number       = "9",
   pages        = "1--19",
-  url          = "http://www.jstatsoft.org/v65/i01/",
+  url          = "https://www.jstatsoft.org/article/view/v065i09",
 
   textVersion  =
   paste("Daniel Fischer, Hannu Oja (2015).",
         "Mann-Whitney Type Tests for Microarray Experiments: The R Package gMWT.",
         "Journal of Statistical Software, 65(9), 1-19.",
-        "URL http://www.jstatsoft.org/v65/i01/.")
+        "URL https://www.jstatsoft.org/article/view/v065i09")
 )
 

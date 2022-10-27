@@ -96,7 +96,8 @@ extern "C" {
     double* joined = &joinedVec[0];
     
     //Sorting the joined array
-    int elements = sizeof(joined) / sizeof(joined[0]);
+    // int elements = sizeof(joined) / sizeof(joined[0]);   // This 'classical' way threw a sig. warning, hence I use this way to determine the length of
+    int elements = *(&joined + 1) - joined;
     sort(joined,joined+elements);
    
     int diffValues = 0;
@@ -110,13 +111,14 @@ extern "C" {
     mult[0] = 1.0;
     
     for(i=1;i<N;i++){
-     if(joined[i]!=joined[i-1]){
-	diffValues += 1;
-	mult[diffValues] = 1.0;    
-     } else {
-	mult[diffValues] += 1.0;
+      if(joined[i]!=joined[i-1]){
+        diffValues += 1;
+	      mult[diffValues] = 1.0;    
+      } else {
+	      mult[diffValues] += 1.0;
       }
     }
+    
     // calculate the correction term
     double innerSum;
     innerSum = 0;
@@ -146,7 +148,8 @@ extern "C" {
     double* joined = &joinedVec[0];
     
     //Sorting the joined array
-    int elements = sizeof(joined) / sizeof(joined[0]);
+    //int elements = sizeof(joined) / sizeof(joined[0]);
+    int elements = *(&joined + 1) - joined;
     sort(joined,joined+elements);
    
     int diffValues = 0;
