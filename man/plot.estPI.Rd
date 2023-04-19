@@ -49,7 +49,7 @@ limits of the x and y axes to the minimum and maximum of the corresponding proba
   plot(res)
 }
 
-
+\value{A plot for \code{estPI} object}
 
 \author{Daniel Fischer}
 

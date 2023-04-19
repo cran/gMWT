@@ -69,6 +69,9 @@ rejectionPlot <- function(X, lCol="red", xlim=NULL, crit=NULL, rejLine=NULL, alp
   
   ylim <- c(0,max(sigTests[,sum(sigTests[1,]<=xlim[2])]))
   
+  oldpar <- par(no.readonly = TRUE)    # code line i
+  on.exit(par(oldpar))            # code line i + 1
+  
   if(crit=="NULL"){
     par(oma=c(2,0,1,0),
         mar=c(4,4,1,1))

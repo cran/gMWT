@@ -64,5 +64,8 @@ tests <- rbind(test1$p.values,test2$p.values,test3$p.values)
 
 rejectionPlot(tests,lCol=c("green","red","blue"))
 }
+
+\value{A rejection plot}
+
 \keyword{methods}
  

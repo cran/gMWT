@@ -36,7 +36,7 @@ This function plots a rejection plot for an existing \code{re} object.
   plot(re1)
 }
 
-
+\value{A plot from a \code{re} object}
 
 \author{Daniel Fischer}
 

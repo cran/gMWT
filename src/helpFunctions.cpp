@@ -97,7 +97,10 @@ extern "C" {
     
     //Sorting the joined array
     // int elements = sizeof(joined) / sizeof(joined[0]);   // This 'classical' way threw a sig. warning, hence I use this way to determine the length of
-    int elements = *(&joined + 1) - joined;
+    // int elements = *(&joined + 1) - joined;
+    
+    int elements = joinedVec.size();
+
     sort(joined,joined+elements);
    
     int diffValues = 0;
@@ -149,7 +152,9 @@ extern "C" {
     
     //Sorting the joined array
     //int elements = sizeof(joined) / sizeof(joined[0]);
-    int elements = *(&joined + 1) - joined;
+    //int elements = *(&joined + 1) - joined;
+    int elements = joinedVec.size();
+    
     sort(joined,joined+elements);
    
     int diffValues = 0;

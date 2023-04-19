@@ -32,6 +32,7 @@
   summary(re1)
 }
 
+\value{Summary for an \code{re} object}
 
 \author{Daniel Fischer}
 

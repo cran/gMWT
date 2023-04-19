@@ -10,6 +10,9 @@ estPlotSingle <- function(x,col,highlight,hlCol,pch,zoom,...){
   markThese[highlight] <- hlCol
   comb <- x$goi
 
+  oldpar <- par(no.readonly = TRUE)    # code line i
+  on.exit(par(oldpar))            # code line i + 1
+  
  par(mfrow=c(Nprobs-1,Nprobs-1),
       pty="s",
       bty="c",

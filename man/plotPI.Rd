@@ -66,6 +66,10 @@ g <- c(rep(1,500),rep(2,600),rep(3,400))
 plotPI(X,g,type="single",mc=1)
 
 }
+
+\value{A plot of probalistic indices}
+
+
 \keyword{methods}
 \keyword{hplot}
  

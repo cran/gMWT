@@ -1,20 +1,13 @@
-citHeader("To cite gMWT in publications use:")
-
-citEntry(entry = "Article",
-  title        = "Mann-Whitney Type Tests for Microarray Experiments: The {R} Package {gMWT}",
-  author       = personList(as.person("Daniel Fischer"),
-                   as.person("Hannu Oja")),
-  journal      = "Journal of Statistical Software",
-  year         = "2015",
-  volume       = "65",
-  number       = "9",
-  pages        = "1--19",
-  url          = "https://www.jstatsoft.org/article/view/v065i09",
-
-  textVersion  =
-  paste("Daniel Fischer, Hannu Oja (2015).",
-        "Mann-Whitney Type Tests for Microarray Experiments: The R Package gMWT.",
-        "Journal of Statistical Software, 65(9), 1-19.",
-        "URL https://www.jstatsoft.org/article/view/v065i09")
+bibentry(bibtype = "Article",  
+         title   = "Mann-Whitney Type Tests for Microarray Experiments: The {R} Package {gMWT}",
+         author  = c(person(given = "Daniel", family = "Fischer", email = "daniel.fischer@luke.fi", role = c("aut", "cre"), comment=c(ORCID="0000-0002-7513-683X")),
+                     person(given = "Hannu", family = "Oja", role = c("aut", "ths"))),
+         journal      = "Journal of Statistical Software",
+         year         = "2015",
+         volume       = "65",
+         number       = "9",
+         pages        = "1--19",
+         doi          = "10.18637/jss.v065.i09", 
+         url          = "https://www.jstatsoft.org/article/view/v065i09",
+         header  = "To cite gMWT in publications use:"
 )
-

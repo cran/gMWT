@@ -38,7 +38,7 @@ tests. For more details see also \code{\link[gMWT]{rejectionPlot}}.
   re1
 }
 
-
+\value{Content of an \code{re} object}
 
 \author{Daniel Fischer}
 

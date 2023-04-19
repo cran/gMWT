@@ -28,6 +28,7 @@ The print function displays the matrix of probabilistic indices.
   print(res)
 }
 
+\value{Content of an \code{estPI} object}
 
 
 \author{Daniel Fischer}
